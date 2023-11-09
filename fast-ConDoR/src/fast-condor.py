@@ -13,7 +13,6 @@ import argparse
 import itertools
 import math
 import numpy as np
-
 from solveFastConstrainedDollo import solveFastConstrainedDollo
 
 def tree_to_newick(T, root=None):

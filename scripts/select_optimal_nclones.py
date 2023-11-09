@@ -82,7 +82,6 @@ def main(args):
 
     distances_df = pd.DataFrame({'nclone': proper_clones, 'avg_distance': avg_distance})
     distances_df['distance_from_prev_clone'] = distances_df['avg_distance'].diff()
-
     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
     # plot the distance from previous clone
@@ -103,11 +102,11 @@ def main(args):
     cn_profile_fp = Path(args.i) / f"{args.d}-homdel-nclones={opt_nclone}_solution.amp_clone_profiles.csv"
     clone_assignment_fp = Path(args.i) / f"{args.d}-homdel-nclones={opt_nclone}_solution.cell_assignments.csv"
 
-    # shutil.copyfile(clone_assignment_fp, args.a) 
-    # shutil.copyfile(cn_profile_fp, args.p) 
+    shutil.copyfile(clone_assignment_fp, args.a) 
+    shutil.copyfile(cn_profile_fp, args.p) 
 
-    shutil.copyfile(cn_profile_fp, Path(args.output_dir) / f"{args.d}-homdel-nclones={opt_nclone}_solution.amp_clone_profiles.csv")
-    shutil.copyfile(clone_assignment_fp, Path(args.output_dir) / f"{args.d}-homdel-nclones={opt_nclone}_solution.cell_assignments.csv")
+    #shutil.copyfile(cn_profile_fp, Path(args.output_dir) / f"{args.d}-homdel-nclones={opt_nclone}_solution.amp_clone_profiles.csv")
+    #shutil.copyfile(clone_assignment_fp, Path(args.output_dir) / f"{args.d}-homdel-nclones={opt_nclone}_solution.cell_assignments.csv")
 
     return 0
 
@@ -119,8 +118,8 @@ if __name__ == '__main__':
     parser.add_argument('--amplicon_gene_map', type=str, help='input path to amplicon gene map', default=None)
     parser.add_argument('--min_amps_per_gene', type=int, help='minimum number of amplicons per gene', default=3)
     parser.add_argument('--output_dir', type=str, help='output directory')
-    # parser.add_argument('-a', type=str, help='output optimal clone assignment csv file')
-    # parser.add_argument('-p', type=str, help='output optimal copy number profiles csv file')
+    parser.add_argument('-a', type=str, help='output optimal clone assignment csv file')
+    parser.add_argument('-p', type=str, help='output optimal copy number profiles csv file')
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     main(args)
