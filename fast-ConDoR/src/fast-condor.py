@@ -48,6 +48,17 @@ def main(args):
     
     ncells = len(df_variant_readcounts)
     
+    subclonal_mutations = None
+    
+    if args.subclonal_mutations is not None:
+        with open(args.subclonal_mutations, 'rb') as f:
+            subclonal_mutations = pickle.load(f)
+
+    cn_profiles = None
+
+    if args.cnp is not None:
+        cn_profiles = pd.read_csv(args.cnp, index_col=None)
+
     snp_list = []
     if args.s is not None:
         with open(args.s, 'r') as inp:
@@ -65,7 +76,6 @@ def main(args):
     fp = args.a
     fn = args.b
     ado = args.ado
-    #force_presence = args.p
     
     if args.f:
         # filter mutations
@@ -154,7 +164,7 @@ def main(args):
     solver = solveFastConstrainedDollo(df_character_matrix, df_total_readcounts=df_total_readcounts,
                                        df_variant_readcounts=df_variant_readcounts,
                                        k=k, fp=fp, fn=fn,
-                                       ado_precision = ado, snp_list=snp_list, snv_list=snv_list, annotations = cravat_df, sample=args.d)
+                                       ado_precision = ado, snp_list=snp_list, snv_list=snv_list, annotations = cravat_df, sample=args.d, scr_flag = args.scr, subclonal_mutations=subclonal_mutations, cnp=cn_profiles)
 
     solver.solveSetInclusion()
 
@@ -211,9 +221,17 @@ if __name__ == "__main__":
     parser.add_argument('--vt1', type=float, help='VAF thershold to call a mutation absent [0.25]', default=0.25)
     parser.add_argument('--trt', type=int, help='threshold on total number of reads for reliable measurement [10]', default=10)
     parser.add_argument('--mft', type=float, help='fraction of cells where mutation information can be missing [0.2]', default=0.2)
+    parser.add_argument('--scr', help='should subclonal refinement be run? [No]', default=False, action='store_true')
+    parser.add_argument('--subclonal_mutations', type=str, help='pickle file to dictionary mapping cluster idx to manually selected subclonal SNVs present', default=None)
+    parser.add_argument('--cnp', type=str, help='CSV file to copy number profiles of clusters', default=None)
+
+    
 
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
-
+    
+    if args.subclonal_mutations is not None and not args.scr:
+        raise Exception("--subclonal_mutations requires --scr to be specified.")
+    
     if args.i is None and (args.r is None and args.v is None):
         raise Exception("please provide either the binarized mutation matrix, or the total and variant readcount matrices!")
     

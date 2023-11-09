@@ -36,14 +36,11 @@ spec.loader.exec_module(module)
 solveConstrainedDollo = module.solveConstrainedDollo
 
 
-
-
-
 # fast version of the constrained dollo solver
 class solveFastConstrainedDollo():
 
     def __init__(self, df_character_matrix, df_total_readcounts = None, df_variant_readcounts = None, snp_list = [], snv_list = [], annotations = None,
-                 k = None, fp = None, fn = None, ado_precision = 15, threads = 1, timelimit = None, verbose = True, sample=None):
+                 k = None, fp = None, fn = None, ado_precision = 15, threads = 1, timelimit = None, verbose = True, sample=None, scr_flag = False, subclonal_mutations=None, cnp = None):
         
         # input character matrix and clustering
         self.df_character_matrix = df_character_matrix
@@ -55,6 +52,9 @@ class solveFastConstrainedDollo():
         self.snv_list = snv_list
         self.df_gain = None
         self.sample = sample
+        self.scr_flag = scr_flag
+        self.subclonal_mutations = subclonal_mutations
+        self.cnp = cnp
             
         def mut_replace(x):
             x = x.replace(":", "_").replace("/" , "_").split('_')
@@ -309,102 +309,101 @@ class solveFastConstrainedDollo():
             pruned_events = [x for x in df_solb_binary if x not in [f'{y}_1' for y in snp_list]]
             self.solT_mut, self.solT_cell = solveFastConstrainedDollo.generate_perfect_phylogeny(df_solb_binary[pruned_events])
             
+            if self.scr_flag == True:
+                valid_mutations = set()
+                for edge in self.solT_cell.edges():
+                    valid_mutations.add(edge[0])
+                    valid_mutations.add(edge[1])
 
-            valid_mutations = set()
-            for edge in self.solT_cell.edges():
-                valid_mutations.add(edge[0])
-                valid_mutations.add(edge[1])
-
-            result_columns = [i[:-2] for i in valid_mutations if len(str(i)) > 4]
-            subclonal_snvs = {}
-            cell_attachments = {}
-            
-            def is_perfect_phylogeny(df):
-                # Iterate over each column (character) in the DataFrame
-                if df.shape[1] == 0:
-                    return True
-
-                for char1, char2 in itertools.combinations(df.columns, 2):
-                    common_char = set(df[df[char1] == 1].index).intersection(set(df[df[char2] == 1].index))
-                    common_char2 = set(df[df[char1] == 1].index).intersection(set(df[df[char2] == 0].index))
-                    common_char3 = set(df[df[char1] == 0].index).intersection(set(df[df[char2] == 1].index))
-                    if len(common_char) > 0 and len(common_char2) > 0 and len(common_char3) > 0:
-                        return False
+                result_columns = [i[:-2] for i in valid_mutations if len(str(i)) > 4]
+                subclonal_snvs = {}
+                cell_attachments = {}
                 
-                return True
 
-            best_df_gain = self.df_gain
-            for cluster_idx in range(nclusters):
-                gained_mutations = [mut for mut in self.mutation_list if self.df_gain.loc[cluster_idx][mut] == 1]
-                cluster = self.df_clustering.index[self.df_clustering == cluster_idx].to_list()
-                if cluster_idx == 1:
-                    gained_mutations.extend(["chr3_30715617_T_G", "chr3_30715619_G_C", "chr3_30713659_C_CGCCAAGG", "chr11_71943807_T_A", "chr3_178936082_C_G", "chr15_67482870_T_C"])
-                for m in [item for item in gained_mutations if item in result_columns]:
-                    for n in [n for n in self.solT_cell.nodes() if len(str(n)) > 4 and n[:-2] == m]:
-                        if self.solT_cell.has_node(n):
-                            predecessors = list(self.solT_cell.predecessors(n))
-                            successors = list(self.solT_cell.successors(n))
-                            self.solT_cell.remove_node(n)
-                            for predecessor in predecessors:
-                                for successor in successors:
-                                    self.solT_cell.add_edge(predecessor, successor)
+                best_df_gain = self.df_gain
+                for cluster_idx in range(nclusters):
+                    gained_mutations = [mut for mut in self.mutation_list if self.df_gain.loc[cluster_idx][mut] == 1]
+                    cluster = self.df_clustering.index[self.df_clustering == cluster_idx].to_list()
 
-                unique_df = self.df_gain[gained_mutations].drop_duplicates()
-                found_gametes = unique_df.values.tolist()
+                    if self.subclonal_mutations is not None:
+                        gained_mutations.extend(self.subclonal_mutations[cluster_idx])
 
-                if len(gained_mutations) == 0:
-                    cell_attachments[cluster_idx] = cluster
-                    subclonal_snvs[cluster_idx] = None
-
-                elif len(gained_mutations) == 1:
-                    subclonal_snvs[cluster_idx] = gained_mutations
-                    cell_attachments[cluster_idx] = {}
-                    cell_attachments[cluster_idx][gained_mutations[0] + '_4'] = []
-                    for cell in cluster:
-                        if self.character_coeff_dict[1].at[cell, gained_mutations[0]] > self.character_coeff_dict[0].at[cell, gained_mutations[0]]:
-                            cell_attachments[cluster_idx][gained_mutations[0] + '_4'].append(cell)
-                else:
-                    #self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster].to_csv(f'/n/fs/ragr-research/users/aj7381/falcon/pipeline/M04_test/c{cluster_idx}-input_character_matrix.csv')
-                    solver = solveConstrainedDollo(self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001)
-                    solver.solveSetInclusion(1800)
-                    subclonal_snvs[cluster_idx] = solver.solT_cell
-
-            for c, m in subclonal_snvs.items():
-                if m is not None:
-                    if type(m) is list:
-                        self.solT_cell.add_edge(c, 'root' + f'_{c}')
-                        self.solT_cell.add_edge('root' + f'_{c}', m[0] + '_4')
-                        if len(m) > 1:
-                            for i in range(1, len(m)):
-                                self.solT_cell.add_edge(m[i-1] + '_4', m[i] + '_4')
+                    '''
                     else:
-                        cell_attachments[c] = {}
-                        for edge in nx.generate_edgelist(m, data=False):
-                            edge0, edge1 = edge.split(' ')
-                            if edge1.startswith('cell') == False:
-                                if edge0 == 'root':
-                                    self.solT_cell.add_edge(c, 'root' + f'_{c}')
-                                    self.solT_cell.add_edge('root' + f'_{c}', edge1[:-1] + '4')
-                                else:
-                                    self.solT_cell.add_edge(edge0[:-1] + '4', edge1[:-1] + '4')
-                            else:
-                                if edge0.startswith('r') == False:
-                                    if edge0 not in cell_attachments[c].keys():
-                                        cell_attachments[c][edge0[:-1] + '4'] = []
-                                    
-                                    cell_attachments[c][edge0[:-1] + '4'].append(edge1)
-                                else:
-                                    if edge0 not in cell_attachments[c].keys():
-                                        cell_attachments[c][edge0] = []
-                                    
-                                    cell_attachments[c][edge0].append(edge1)
+                        if cluster_idx == 1:
+                            gained_mutations.extend(["chr3_30715617_T_G", "chr3_30715619_G_C", "chr3_30713659_C_CGCCAAGG", "chr11_71943807_T_A", "chr3_178936082_C_G", "chr15_67482870_T_C"])
+                    '''
 
-            for k in cell_attachments.keys():
-                if type(cell_attachments[k]) is list:
-                    self.solT_cell.nodes[k]['cell_attachment'] = cell_attachments[k]
-                else:
-                    for v in cell_attachments[k].keys():
-                        self.solT_cell.nodes[v]['cell_attachment'] = cell_attachments[k][v]
+                    for m in [item for item in gained_mutations if item in result_columns]:
+                        for n in [n for n in self.solT_cell.nodes() if len(str(n)) > 4 and n[:-2] == m]:
+                            if self.solT_cell.has_node(n):
+                                predecessors = list(self.solT_cell.predecessors(n))
+                                successors = list(self.solT_cell.successors(n))
+                                self.solT_cell.remove_node(n)
+                                for predecessor in predecessors:
+                                    for successor in successors:
+                                        self.solT_cell.add_edge(predecessor, successor)
+
+                    unique_df = self.df_gain[gained_mutations].drop_duplicates()
+                    found_gametes = unique_df.values.tolist()
+
+                    if len(gained_mutations) == 0:
+                        cell_attachments[cluster_idx] = cluster
+                        subclonal_snvs[cluster_idx] = None
+
+                    elif len(gained_mutations) == 1:
+                        subclonal_snvs[cluster_idx] = gained_mutations
+                        cell_attachments[cluster_idx] = {}
+                        cell_attachments[cluster_idx][gained_mutations[0] + '_4'] = []
+                        for cell in cluster:
+                            if self.character_coeff_dict[1].at[cell, gained_mutations[0]] > self.character_coeff_dict[0].at[cell, gained_mutations[0]]:
+                                cell_attachments[cluster_idx][gained_mutations[0] + '_4'].append(cell)
+                    else:
+                        #self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster].to_csv(f'/n/fs/ragr-research/users/aj7381/falcon/pipeline/M04_test/c{cluster_idx}-input_character_matrix.csv')
+                        solver = solveConstrainedDollo(self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001)
+                        solver.solveSetInclusion(1800)
+                        subclonal_snvs[cluster_idx] = solver.solT_cell
+
+                for c, m in subclonal_snvs.items():
+                    if m is not None:
+                        if type(m) is list:
+                            self.solT_cell.add_edge(c, 'root' + f'_{c}')
+                            self.solT_cell.add_edge('root' + f'_{c}', m[0] + '_4')
+                            if len(m) > 1:
+                                for i in range(1, len(m)):
+                                    self.solT_cell.add_edge(m[i-1] + '_4', m[i] + '_4')
+                        else:
+                            cell_attachments[c] = {}
+                            for edge in nx.generate_edgelist(m, data=False):
+                                edge0, edge1 = edge.split(' ')
+                                if edge1.startswith('cell') == False:
+                                    if edge0 == 'root':
+                                        self.solT_cell.add_edge(c, 'root' + f'_{c}')
+                                        self.solT_cell.add_edge('root' + f'_{c}', edge1[:-1] + '4')
+                                    else:
+                                        self.solT_cell.add_edge(edge0[:-1] + '4', edge1[:-1] + '4')
+                                else:
+                                    if edge0.startswith('r') == False:
+                                        if edge0 not in cell_attachments[c].keys():
+                                            cell_attachments[c][edge0[:-1] + '4'] = []
+                                        
+                                        cell_attachments[c][edge0[:-1] + '4'].append(edge1)
+                                    else:
+                                        if edge0 not in cell_attachments[c].keys():
+                                            cell_attachments[c][edge0] = []
+                                        
+                                        cell_attachments[c][edge0].append(edge1)
+
+                for k in cell_attachments.keys():
+                    if type(cell_attachments[k]) is list:
+                        self.solT_cell.nodes[k]['cell_attachment'] = cell_attachments[k]
+                    else:
+                        for v in cell_attachments[k].keys():
+                            self.solT_cell.nodes[v]['cell_attachment'] = cell_attachments[k][v]
+
+                for node in self.solT_cell.nodes():
+                    if type(node) == int:
+                        self.solT_cell.nodes[node]['cn_profile'] = self.cnp.loc[node].tolist()
             
             directory = './results/pickle_files/'
             if not os.path.exists(directory):
