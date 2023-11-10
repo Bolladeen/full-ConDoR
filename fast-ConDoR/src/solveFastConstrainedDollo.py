@@ -328,11 +328,9 @@ class solveFastConstrainedDollo():
                     if self.subclonal_mutations is not None:
                         gained_mutations.extend(self.subclonal_mutations[cluster_idx])
 
-                    '''
-                    else:
-                        if cluster_idx == 1:
-                            gained_mutations.extend(["chr3_30715617_T_G", "chr3_30715619_G_C", "chr3_30713659_C_CGCCAAGG", "chr11_71943807_T_A", "chr3_178936082_C_G", "chr15_67482870_T_C"])
-                    '''
+                    #else:
+                        #if cluster_idx == 1:
+                            #gained_mutations.extend(["chr3_30715617_T_G", "chr3_30715619_G_C", "chr3_30713659_C_CGCCAAGG", "chr11_71943807_T_A", "chr3_178936082_C_G", "chr15_67482870_T_C"])
 
                     for m in [item for item in gained_mutations if item in result_columns]:
                         for n in [n for n in self.solT_cell.nodes() if len(str(n)) > 4 and n[:-2] == m]:
@@ -359,8 +357,7 @@ class solveFastConstrainedDollo():
                             if self.character_coeff_dict[1].at[cell, gained_mutations[0]] > self.character_coeff_dict[0].at[cell, gained_mutations[0]]:
                                 cell_attachments[cluster_idx][gained_mutations[0] + '_4'].append(cell)
                     else:
-                        #self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster].to_csv(f'/n/fs/ragr-research/users/aj7381/falcon/pipeline/M04_test/c{cluster_idx}-input_character_matrix.csv')
-                        solver = solveConstrainedDollo(self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001)
+                        solver = solveConstrainedDollo(self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001, ado_precision=50)
                         solver.solveSetInclusion(1800)
                         subclonal_snvs[cluster_idx] = solver.solT_cell
 
@@ -384,9 +381,9 @@ class solveFastConstrainedDollo():
                                         self.solT_cell.add_edge(edge0[:-1] + '4', edge1[:-1] + '4')
                                 else:
                                     if edge0.startswith('r') == False:
-                                        if edge0 not in cell_attachments[c].keys():
+                                        if edge0[:-1] + '4' not in cell_attachments[c].keys():
                                             cell_attachments[c][edge0[:-1] + '4'] = []
-                                        
+                                           
                                         cell_attachments[c][edge0[:-1] + '4'].append(edge1)
                                     else:
                                         if edge0 not in cell_attachments[c].keys():
@@ -404,7 +401,52 @@ class solveFastConstrainedDollo():
                 for node in self.solT_cell.nodes():
                     if type(node) == int:
                         self.solT_cell.nodes[node]['cn_profile'] = self.cnp.loc[node].tolist()
+
+                def find_subchains(graph, start_node, current_chain, chains):
+                    if type(start_node) == int:
+                        if len(current_chain) > 1:
+                            chains.append(current_chain)
+                    else:
+                        current_chain.append(start_node)
+                    if len(list(graph.neighbors(start_node))) == 0:
+                        if len(current_chain) > 1:
+                            chains.append(current_chain)
+                    elif len(list(graph.neighbors(start_node))) == 1:
+                        find_subchains(graph, list(graph.neighbors(start_node))[0], current_chain, chains)
+                    else:
+                        if len(current_chain) > 1:
+                            chains.append(current_chain)
+                        for neighbor in graph.neighbors(start_node):
+                            find_subchains(graph, neighbor, [], chains)
+                        
+            chains = []
+            find_subchains(self.solT_cell, 'root', [], chains)
+            optimizable_subchains = []
+            for c in chains:
+                opt_c = [optc for optc in c if optc[-1] == '1']
+                if len(opt_c) > 1:
+                    optimizable_subchains.append(opt_c)
             
+            def find_leaf_nodes_with_int_values(graph, root):
+                def dfs(node):
+                    if graph.out_degree(node) == 0 and isinstance(node, int):
+                        leaf_nodes.append(node)
+                    for neighbor in graph.neighbors(node):
+                        dfs(neighbor)
+
+                leaf_nodes = []
+                dfs(root)
+                return leaf_nodes
+
+            for chain in optimizable_subchains:
+                subclusters = find_leaf_nodes_with_int_values(self.solT_cell, chain[0])
+                cluster = []
+                for cidx in subclusters:
+                    cluster.extend(self.df_clustering.index[self.df_clustering == cidx].to_list())
+                solver = solveConstrainedDollo(self.df_character_matrix[[c[:-2] for c in chain] + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001, ado_precision=50)
+                solver.solveSetInclusion(1800)
+
+
             directory = './results/pickle_files/'
             if not os.path.exists(directory):
                 os.makedirs(directory)
