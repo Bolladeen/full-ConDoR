@@ -494,19 +494,12 @@ class solveFastConstrainedDollo():
                                     new_edges.append((predecessor, successor))
                 return g, new_edges
 
-            def gain_likelihood(cell, permute):
+            def gain_likelihood(cell, permute, likelihood):
                 max_likelihood = - np.inf
                 best_m = None
-                for idx in range(1, len(permute)):
-                    perm = [0] * idx + [1] * (len(permute) - idx)
-                    likelihood = 0
-                    gains = permute[:idx]
-                    absent = permute[idx:]
-                    for m in gains:
-                        likelihood += self.character_coeff_dict[1].at[cell, m[:-2]]
-                    for m in absent:
-                        likelihood += self.character_coeff_dict[0].at[cell, m[:-2]]
-
+                for idx in range(0, len(permute)):
+                    likelihood += self.character_coeff_dict[1].at[cell, permute[idx][:-2]]
+                    likelihood -= self.character_coeff_dict[0].at[cell, permute[idx][:-2]]
                     if likelihood > max_likelihood:
                         max_likelihood = likelihood
                         best_m = permute[idx]
@@ -519,6 +512,7 @@ class solveFastConstrainedDollo():
                 chain_root = list(self.solT_cell.predecessors(chain[0]))[0]
                 chain_tail = list(self.solT_cell.successors(chain[-1]))
                 subclusters = find_leaf_nodes_with_int_values(self.solT_cell, chain[0])
+                print(self.df_clustering.value_counts())
                 self.solT_cell, new_edges = remove_tree_nodes(self.solT_cell, chain)
                 cluster = []
                 for cidx in subclusters:
@@ -534,7 +528,8 @@ class solveFastConstrainedDollo():
                     permute_attachment = defaultdict(list)
                     likelihood = 0
                     for cell in cluster:
-                        glikelihood, best_attachment = gain_likelihood(cell, permute)
+                        negative_likelihood = sum([self.character_coeff_dict[0].at[cell, m[:-2]] for m in permute])
+                        glikelihood, best_attachment = gain_likelihood(cell, permute, negative_likelihood)
                         permute_attachment[best_attachment].append(cell)
                         likelihood += glikelihood
                     if likelihood > max_likelihood:
@@ -548,6 +543,8 @@ class solveFastConstrainedDollo():
                 for idx, node in enumerate(best_permute):
                     self.solT_cell.add_node(node)
                     self.solT_cell.nodes[node]['cell_attachment'] = best_cell_attachment[node]
+
+                    print(node, len(best_cell_attachment[node]))
 
                 for idx, node in enumerate(best_permute):
                     if idx < len(best_permute) - 1:
