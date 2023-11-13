@@ -471,7 +471,7 @@ class solveFastConstrainedDollo():
             
             def find_leaf_nodes_with_int_values(graph, root):
                 def dfs(node):
-                    if graph.out_degree(node) == 0 and isinstance(node, int):
+                    if isinstance(node, int):
                         leaf_nodes.append(node)
                     for neighbor in graph.neighbors(node):
                         dfs(neighbor)
@@ -494,52 +494,44 @@ class solveFastConstrainedDollo():
                                     new_edges.append((predecessor, successor))
                 return g, new_edges
 
-            def gain_likelihood(cell, permute, likelihood):
-                max_likelihood = - np.inf
-                best_m = None
-                for idx in range(0, len(permute)):
-                    likelihood += self.character_coeff_dict[1].at[cell, permute[idx][:-2]]
-                    likelihood -= self.character_coeff_dict[0].at[cell, permute[idx][:-2]]
-                    if likelihood > max_likelihood:
-                        max_likelihood = likelihood
-                        best_m = permute[idx]
-
-                return max_likelihood, best_m
-
-
-
             for chain in optimizable_subchains:
                 chain_root = list(self.solT_cell.predecessors(chain[0]))[0]
                 chain_tail = list(self.solT_cell.successors(chain[-1]))
                 subclusters = find_leaf_nodes_with_int_values(self.solT_cell, chain[0])
-                print(self.df_clustering.value_counts())
                 self.solT_cell, new_edges = remove_tree_nodes(self.solT_cell, chain)
                 cluster = []
                 for cidx in subclusters:
                     cluster.extend(self.df_clustering.index[self.df_clustering == cidx].to_list())
+                
+                cluster = np.array(cluster)
+                chain_len = len(chain)
+                
+                def get_permutations(row):
+                    return np.array(list(permutations(row)))
+                
+                mutation_chain = [m[:-2] for m in chain]
+                
+                pos_vec = np.array([self.character_coeff_dict[1][m].loc[cluster] for m in mutation_chain])
+                neg_vec = np.array([self.character_coeff_dict[0][m].loc[cluster] for m in mutation_chain])
+                
+                chain_permutation = np.apply_along_axis(get_permutations, axis=0, arr=chain)
 
-                all_orderings = list(permutations(chain))
-                sampled_orderings = random.sample(all_orderings, min(len(all_orderings), math.factorial(7)))
+                pos_vec_permutation = np.apply_along_axis(get_permutations, axis=0, arr=pos_vec)
+                neg_vec_permutation = np.apply_along_axis(get_permutations, axis=0, arr=neg_vec)
 
-                best_permute = None
+                lower_triangular_matrix = np.tril(np.ones((chain_len, chain_len), dtype=int))
+                upper_triangular_matrix = np.triu(np.ones((chain_len, chain_len), dtype=int))
+
+                glikelihood = lower_triangular_matrix @ pos_vec_permutation + upper_triangular_matrix @  neg_vec_permutation
+                gamete_likelihood = np.sum(np.max(glikelihood, axis=1), axis=1)
+                best_permute_idx = np.argmax(gamete_likelihood)
+                best_permute = list(chain_permutation[best_permute_idx])
+                
                 best_cell_attachment = defaultdict(list)
-                max_likelihood = - np.inf
-                for permute in sampled_orderings:
-                    permute_attachment = defaultdict(list)
-                    likelihood = 0
-                    for cell in cluster:
-                        negative_likelihood = sum([self.character_coeff_dict[0].at[cell, m[:-2]] for m in permute])
-                        glikelihood, best_attachment = gain_likelihood(cell, permute, negative_likelihood)
-                        permute_attachment[best_attachment].append(cell)
-                        likelihood += glikelihood
-                    if likelihood > max_likelihood:
-                        max_likelihood = likelihood
-                        best_permute = list(permute)
-                        best_cell_attachment = permute_attachment
-
-                #solver = solveConstrainedDollo(self.df_character_matrix[[c[:-2] for c in chain] + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001, ado_precision=50)
-                #solver.solveSetInclusion(1800)
-
+                max_idxs = np.argmax(glikelihood[best_permute_idx], axis=0)
+                for idx, m in enumerate(best_permute):
+                    best_cell_attachment[m] = cluster[list(np.where(max_idxs == idx)[0])]
+                
                 for idx, node in enumerate(best_permute):
                     self.solT_cell.add_node(node)
                     self.solT_cell.nodes[node]['cell_attachment'] = best_cell_attachment[node]
