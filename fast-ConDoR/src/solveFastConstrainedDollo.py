@@ -366,8 +366,8 @@ class solveFastConstrainedDollo():
                 for c, m in subclonal_snvs.items():
                     if m is not None:
                         if type(m) is list:
-                            self.solT_cell.add_edge(c, 'root' + f'_{c}')
-                            self.solT_cell.add_edge('root' + f'_{c}', m[0] + '_4')
+                            self.solT_cell.add_edge(c, 'subtree_root' + f'_{c}')
+                            self.solT_cell.add_edge('subtree_root' + f'_{c}', m[0] + '_4')
                             if len(m) > 1:
                                 for i in range(1, len(m)):
                                     self.solT_cell.add_edge(m[i-1] + '_4', m[i] + '_4')
@@ -377,8 +377,8 @@ class solveFastConstrainedDollo():
                                 edge0, edge1 = edge.split(' ')
                                 if edge1.startswith('cell') == False:
                                     if edge0 == 'root':
-                                        self.solT_cell.add_edge(c, 'root' + f'_{c}')
-                                        self.solT_cell.add_edge('root' + f'_{c}', edge1[:-1] + '4')
+                                        self.solT_cell.add_edge(c, 'subtree_root' + f'_{c}')
+                                        self.solT_cell.add_edge('subtree_root' + f'_{c}', edge1[:-1] + '4')
                                     else:
                                         self.solT_cell.add_edge(edge0[:-1] + '4', edge1[:-1] + '4')
                                 else:
