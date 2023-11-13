@@ -11,15 +11,17 @@ import shutil
 import time
 import gurobipy as gp
 import numpy as np
+import math
+import random
+random.seed(0)
 import pandas as pd
 import networkx as nx
 import itertools
 from scipy.stats import betabinom
 from collections import defaultdict
 import pickle
-import os
-import sys
 import importlib.util
+from itertools import permutations
 
 current_directory = os.path.dirname(os.path.realpath(__file__))
 
@@ -403,11 +405,7 @@ class solveFastConstrainedDollo():
                         self.solT_cell.nodes[node]['cn_profile'] = self.cnp.loc[node].tolist()
 
                 def find_subchains(graph, start_node, current_chain, chains):
-                    if type(start_node) == int:
-                        if len(current_chain) > 1:
-                            chains.append(current_chain)
-                    else:
-                        current_chain.append(start_node)
+                    current_chain.append(start_node)
                     if len(list(graph.neighbors(start_node))) == 0:
                         if len(current_chain) > 1:
                             chains.append(current_chain)
@@ -419,13 +417,57 @@ class solveFastConstrainedDollo():
                         for neighbor in graph.neighbors(start_node):
                             find_subchains(graph, neighbor, [], chains)
                         
+            def reorder_chain(chain, t):
+                chain_root = list(t.predecessors(chain[0]))[0]
+                chain_tail = list(t.successors(chain[-1]))
+                chain = sorted(chain, key=lambda s: s[-1])
+                for m in chain:
+                    for n in [n for n in t.nodes() if len(str(n)) > 4 and n == m]:
+                        if t.has_node(n):
+                            predecessors = list(t.predecessors(n))
+                            successors = list(t.successors(n))
+                            t.remove_node(n)
+
+                for idx, node in enumerate(chain):
+                    t.add_node(node)
+                for idx, node in enumerate(chain):
+                    if idx < len(chain) - 1:
+                        t.add_edge(chain[idx], chain[idx + 1])
+
+                t.add_edge(chain_root, chain[0])
+                for chain_t in chain_tail:
+                    t.add_edge(chain[-1], chain_t)
+
+
             chains = []
             find_subchains(self.solT_cell, 'root', [], chains)
+            
             optimizable_subchains = []
             for c in chains:
-                opt_c = [optc for optc in c if optc[-1] == '1']
+                opt_c = [optc for optc in c if type(optc) != int and optc[-1] == '1']
                 if len(opt_c) > 1:
                     optimizable_subchains.append(opt_c)
+                    if c[0] == 'root':
+                        stop_criterion = None
+                        for dx in range(len(c)):
+                            if type(c[dx]) == int:
+                                stop_criterion = dx
+                        if stop_criterion is not None:
+                            reorder_chain(c[1:stop_criterion], self.solT_cell)
+                        else:
+                            reorder_chain(c[1:], self.solT_cell)
+
+                    else:
+                        stop_criterion = None
+                        for dx in range(len(c)):
+                            if type(c[dx]) == int:
+                                stop_criterion = dx
+                        if stop_criterion is not None:
+                            reorder_chain(c[:stop_criterion], self.solT_cell)
+                        else:
+                            reorder_chain(c, self.solT_cell)
+
+
             
             def find_leaf_nodes_with_int_values(graph, root):
                 def dfs(node):
@@ -437,22 +479,102 @@ class solveFastConstrainedDollo():
                 leaf_nodes = []
                 dfs(root)
                 return leaf_nodes
+            
+            def remove_tree_nodes(g, nodes_to_remove):
+                new_edges = []
+                for m in nodes_to_remove:
+                    for n in [n for n in g.nodes() if len(str(n)) > 4 and n == m]:
+                        if g.has_node(n):
+                            predecessors = list(g.predecessors(n))
+                            successors = list(g.successors(n))
+                            g.remove_node(n)
+                            for predecessor in predecessors:
+                                for successor in successors:
+                                    g.add_edge(predecessor, successor)
+                                    new_edges.append((predecessor, successor))
+                return g, new_edges
+
+            def gain_likelihood(cell, permute):
+                max_likelihood = - np.inf
+                best_m = None
+                for idx in range(1, len(permute)):
+                    perm = [0] * idx + [1] * (len(permute) - idx)
+                    likelihood = 0
+                    gains = permute[:idx]
+                    absent = permute[idx:]
+                    for m in gains:
+                        likelihood += self.character_coeff_dict[1].at[cell, m[:-2]]
+                    for m in absent:
+                        likelihood += self.character_coeff_dict[0].at[cell, m[:-2]]
+
+                    if likelihood > max_likelihood:
+                        max_likelihood = likelihood
+                        best_m = permute[idx]
+
+                return max_likelihood, best_m
+
+
 
             for chain in optimizable_subchains:
+                chain_root = list(self.solT_cell.predecessors(chain[0]))[0]
+                chain_tail = list(self.solT_cell.successors(chain[-1]))
                 subclusters = find_leaf_nodes_with_int_values(self.solT_cell, chain[0])
+                self.solT_cell, new_edges = remove_tree_nodes(self.solT_cell, chain)
                 cluster = []
                 for cidx in subclusters:
                     cluster.extend(self.df_clustering.index[self.df_clustering == cidx].to_list())
-                solver = solveConstrainedDollo(self.df_character_matrix[[c[:-2] for c in chain] + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001, ado_precision=50)
-                solver.solveSetInclusion(1800)
 
+                all_orderings = list(permutations(chain))
+                sampled_orderings = random.sample(all_orderings, min(len(all_orderings), math.factorial(7)))
+
+                best_permute = None
+                best_cell_attachment = defaultdict(list)
+                max_likelihood = - np.inf
+                for permute in sampled_orderings:
+                    permute_attachment = defaultdict(list)
+                    likelihood = 0
+                    for cell in cluster:
+                        glikelihood, best_attachment = gain_likelihood(cell, permute)
+                        permute_attachment[best_attachment].append(cell)
+                        likelihood += glikelihood
+                    if likelihood > max_likelihood:
+                        max_likelihood = likelihood
+                        best_permute = list(permute)
+                        best_cell_attachment = permute_attachment
+
+                #solver = solveConstrainedDollo(self.df_character_matrix[[c[:-2] for c in chain] + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001, ado_precision=50)
+                #solver.solveSetInclusion(1800)
+
+                for idx, node in enumerate(best_permute):
+                    self.solT_cell.add_node(node)
+                    self.solT_cell.nodes[node]['cell_attachment'] = best_cell_attachment[node]
+
+                for idx, node in enumerate(best_permute):
+                    if idx < len(best_permute) - 1:
+                        self.solT_cell.add_edge(best_permute[idx], best_permute[idx + 1])
+                
+                for edges in new_edges:
+                    if self.solT_cell.has_edge(edges[0], edges[1]):
+                        self.solT_cell.remove_edge(edges[0], edges[1])
+                
+                first_edge = best_permute[0]
+                last_edge = best_permute[-1]
+                self.solT_cell.add_edge(chain_root, first_edge)
+                for chain_t in chain_tail:
+                    self.solT_cell.add_edge(last_edge, chain_t)
+
+
+            
 
             directory = './results/pickle_files/'
             if not os.path.exists(directory):
                 os.makedirs(directory)
             with open(f'{directory}{self.sample}_self.solT_cell', 'wb') as file:
                 pickle.dump(self.solT_cell, file)
-
+            
+            for node in self.solT_cell.nodes:
+                if 'cell_attachment' in self.solT_cell.nodes[node]:
+                    print(f"Node {node}: {len(self.solT_cell.nodes[node]['cell_attachment'])}")
 
     def writeSolution(self, fname):
         if self.solB is not None:
