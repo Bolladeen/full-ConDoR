@@ -14,6 +14,7 @@ import itertools
 import math
 import numpy as np
 from solveFastConstrainedDollo import solveFastConstrainedDollo
+import yaml
 
 def tree_to_newick(T, root=None):
     if root is None:
@@ -50,8 +51,8 @@ def main(args):
     subclonal_mutations = None
     
     if args.subclonal_mutations is not None:
-        with open(args.subclonal_mutations, 'rb') as f:
-            subclonal_mutations = pickle.load(f)
+        with open(args.subclonal_mutations, 'r') as file:
+            subclonal_mutations = yaml.safe_load(file)
 
     cn_profiles = None
 
@@ -227,7 +228,7 @@ if __name__ == "__main__":
     parser.add_argument('--trt', type=int, help='threshold on total number of reads for reliable measurement [10]', default=10)
     parser.add_argument('--mft', type=float, help='fraction of cells where mutation information can be missing [0.2]', default=0.2)
     parser.add_argument('--scr', help='should subclonal refinement be run? [No]', default=False, action='store_true')
-    parser.add_argument('--subclonal_mutations', type=str, help='pickle file to dictionary mapping cluster idx to manually selected subclonal SNVs present', default=None)
+    parser.add_argument('--subclonal_mutations', type=str, help='yaml file to dictionary mapping cluster idx to manually selected subclonal SNVs present', default=None)
     parser.add_argument('--cnp', type=str, help='CSV file to copy number profiles of clusters', default=None)
 
     
