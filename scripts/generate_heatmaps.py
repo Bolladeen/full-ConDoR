@@ -154,6 +154,12 @@ def main(args):
     df_variant_readcounts = pd.read_csv(args.a)
     df_total_readcounts = pd.read_csv(args.t)
     df_amplicon = pd.read_csv(args.i)
+    if not "chr" not in df_amplicon.columns:
+        if "chrom" in df_amplicon.columns:
+            raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
+        else:
+            # rename
+            df_amplicon = df_amplicon.rename(columns={"chrom": "chr"})
     local_directory = args.l
     dataset = args.d
 
@@ -201,8 +207,6 @@ def main(args):
             mut = line.strip()
             somatic_mutations.append(mut)
 
-
-    
     gs_sol = generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character_matrix, df_multistate, sorted_mutation_list, cravat_df, germline_mutations, somatic_mutations)
     gs_vaf = generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_total_readcounts, sorted_mutation_list, cravat_df, germline_mutations, somatic_mutations)
 

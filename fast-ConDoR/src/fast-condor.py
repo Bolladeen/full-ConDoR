@@ -76,16 +76,22 @@ def main(args):
     fn = args.b
     ado = args.ado
     
+    # filter mutations @HZ: what does this do?
     if args.f:
-        # filter mutations
         df_amplicon = pd.read_csv(args.m, index_col = 0)
+        if not "chr" not in df_amplicon.columns:
+            if "chrom" in df_amplicon.columns:
+                raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
+            else:
+                # rename
+                df_amplicon = df_amplicon.rename(columns={"chrom": "chr"})
         
         mutation_list = list(df_variant_readcounts.columns)
         mut_data = []
         for mutation in mutation_list:
             mut_chr = mutation.split('_')[0].lstrip('chr')
             mut_pos = int(mutation.split('_')[1])
-            mut_gene = df_amplicon[((df_amplicon['chrom'] == mut_chr) &
+            mut_gene = df_amplicon[((df_amplicon['chr'] == mut_chr) &
                                     (df_amplicon['min_pos'] <= mut_pos) &
                                     (df_amplicon['max_pos'] >= mut_pos))]['gene'].values[0]
             mut_data.append([mutation, mut_chr, mut_pos, mut_gene])
@@ -174,7 +180,7 @@ def main(args):
     
     if solver.solT_cell is not None:
         with open(f'{prefix}_tree.newick', 'w') as out:
-                out.write(tree_to_newick(solver.solT_cell) + ';')
+            out.write(tree_to_newick(solver.solT_cell) + ';')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

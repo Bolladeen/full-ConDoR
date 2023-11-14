@@ -1,0 +1,783 @@
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:31:23 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:31:23 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:35:43 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:35:43 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:36:03 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:36:23 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:36:32 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:37:58 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:37:58 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:38:07 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:39:19 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:40:29 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:40:30 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:40:38 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:41:09 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:41:55 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:42:18 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:57:32 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:57:32 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:57:52 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:59:17 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:59:17 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 19:59:34 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:00:25 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:01:47 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:05:49 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:05:49 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:05:59 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:07:01 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:11:40 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:11:40 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:11:43 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:12:17 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:12:18 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:02 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:02 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:31 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:31 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:31 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:31 2023
+
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:33 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:33 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:33 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:33 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSAccessID
+Set parameter LogFile to value "gurobi.log"
+Set parameter LicenseID to value 2416028
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:34 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:34 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:34 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:34 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:34 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter LicenseID to value 2416028
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LogFile to value "gurobi.log"
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:35 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:35 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:44:35 2023
+
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:24 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:25 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter LicenseID to value 2416028
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSSecret
+Set parameter LogFile to value "gurobi.log"
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:27 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:28 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:28 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:28 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:28 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSAccessID
+Set parameter LicenseID to value 2416028
+Set parameter WLSSecret
+Set parameter WLSAccessID
+Set parameter LicenseID to value 2416028
+Set parameter WLSSecret
+Set parameter LogFile to value "gurobi.log"
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:45:29 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:48:02 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:26 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:26 2023
+
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:26 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:26 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:26 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:26 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSAccessID
+Set parameter LogFile to value "gurobi.log"
+Set parameter LicenseID to value 2416028
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:26 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:27 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:27 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:27 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:27 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:29 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:29 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:29 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:29 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:29 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter LogFile to value "gurobi.log"
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:30 2023
+
+
+Gurobi 10.0.3 (linux64, gurobi_cl) logging started Thu Nov  9 20:51:30 2023
+
+Set parameter WLSAccessID
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter WLSSecret
+Set parameter LicenseID to value 2416028
+Set parameter LicenseID to value 2416028
+Set parameter LogFile to value "gurobi.log"
+Set parameter LogFile to value "gurobi.log"
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Academic license - for non-commercial use only - registered to zhangh5@mskcc.org
+Using license file /home/zhangh5/gurobi.lic
+Using license file /home/zhangh5/gurobi.lic

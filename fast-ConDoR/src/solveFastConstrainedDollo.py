@@ -482,7 +482,7 @@ class solveFastConstrainedDollo():
             
             idx_dict = {}
             idx = 0
-            beautify = False 
+            beautify = False
             if writeTree is not None:
                 
                 edgeset = defaultdict(list)

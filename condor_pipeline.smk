@@ -7,7 +7,7 @@ rule all:
 		# expand("{dataset}/opt_nclones/optimal_cell_assignments.csv", dataset=config["datasets"]),
 		# expand("{dataset}/clonal_refinement/refined_cell_assignments.csv", dataset=config["datasets"]),
 		expand("condor_inputs/{dataset}/character_vaf_matrix.csv", dataset=config["datasets"]),
-		expand("condor_outputs/{dataset}/condor_outputs.log", dataset=config["datasets"]),
+		expand("condor_outputs/{dataset}/out_tree.newick", dataset=config["datasets"]),
 		expand("condor_outputs/{dataset}/heatmaps/condor_solution_heatmap.png", dataset=config["datasets"]),
 
 rule condor_inputs:
@@ -41,7 +41,7 @@ rule condor_inputs:
 			-d {wildcards.dataset} \
 			-l {params.hdf5_directory} \
 			-i {input.refined_clone_assignment} \
-			-snvs {params.annotated_mutations}{wildcards.dataset}-patient-all_vars-voi.hz.txt \
+			-snvs {params.annotated_mutations}{wildcards.dataset}-patient-all_vars-voi.hz_curated.txt \
 			-v {output.character_vaf} \
 			-m {output.character_mat} \
 			-a {output.alt_readcounts} \
@@ -58,9 +58,11 @@ rule fast_condor:
 		total_readcounts="condor_inputs/{dataset}/total_readcounts.csv",
 		germline_mutations="condor_inputs/{dataset}/germline_mutations.txt",
 		somatic_mutations="condor_inputs/{dataset}/somatic_mutations.txt",
+	output:
+		newick_tree_file = "condor_outputs/{dataset}/out_tree.newick",
 	params:
 		fast_condor_script = config["fast_condor_script"],
-		amplicon_parameters = config["amplicon_parameters"],
+		amplicon_coordinates_file = config["amplicon_coordinates_file"],
 		output_prefix = "condor_outputs/{dataset}/out",
 		hdf5_directory = config["raw_data_directory"],
 	log:
@@ -81,7 +83,7 @@ rule fast_condor:
 			-s {input.germline_mutations} \
 			-s2 {input.somatic_mutations} \
 			-o {params.output_prefix} \
-			-m {params.amplicon_parameters} \
+			-m {params.amplicon_coordinates_file} \
 			-c {params.hdf5_directory} \
 			-d {wildcards.dataset} \
 			1> {log.std} 2> {log.err}
@@ -103,7 +105,7 @@ rule generate_heatmaps:
 		heatmap_script = Path(config["condor_pipeline_scripts_dir"]) / "generate_heatmaps.py",
 		hdf5_directory=config["raw_data_directory"],
 		condor_solution="condor_outputs/{dataset}/out_B.csv",
-		amplicon_parameters=config["amplicon_parameters"],
+		amplicon_coordinates_file=config["amplicon_coordinates_file"],
 	conda: "condor"
 	log:
 		std="condor_outputs/{dataset}/heatmaps/heatmaps.log",
@@ -127,7 +129,7 @@ rule generate_heatmaps:
 			-a {input.alt_readcounts} \
 			-o {output.solution_heatmap} \
 			-p {output.vaf_heatmap} \
-			-i {params.amplicon_parameters} \
+			-i {params.amplicon_coordinates_file} \
 			1> {log.std} 2> {log.err}
 		"""
 

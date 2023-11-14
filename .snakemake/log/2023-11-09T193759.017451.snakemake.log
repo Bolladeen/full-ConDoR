@@ -1,0 +1,59 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 3000
+Job stats:
+job                  count
+-----------------  -------
+all                      1
+condor_inputs            1
+fast_condor              1
+generate_heatmaps        1
+total                    4
+
+Select jobs to execute...
+
+[Thu Nov  9 19:38:05 2023]
+rule condor_inputs:
+    input: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/0-opt_nclones/M04.sample_sc_clone_assignment.updated.csv
+    output: condor_inputs/M04/character_vaf_matrix.csv, condor_inputs/M04/character_bin_matrix.csv, condor_inputs/M04/alt_readcounts.csv, condor_inputs/M04/total_readcounts.csv, condor_inputs/M04/germline_mutations.txt, condor_inputs/M04/somatic_mutations.txt
+    log: condor_inputs/M04/condor_inputs.log, condor_inputs/M04/condor_inputs.err.log
+    jobid: 1
+    reason: Missing output files: condor_inputs/M04/character_vaf_matrix.csv, condor_inputs/M04/somatic_mutations.txt, condor_inputs/M04/alt_readcounts.csv, condor_inputs/M04/germline_mutations.txt, condor_inputs/M04/total_readcounts.csv, condor_inputs/M04/character_bin_matrix.csv
+    wildcards: dataset=M04
+    threads: 4
+    resources: mem_mb=8000, mem_mib=7630, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, time_min=59
+
+Submitted job 1 with external jobid '87358986 logs/cluster/condor_inputs/dataset=M04/jobid1_8ceb8e2e-7667-4bed-a095-d66e7fb03172.out'.
+[Thu Nov  9 19:39:17 2023]
+Error in rule condor_inputs:
+    jobid: 1
+    input: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/0-opt_nclones/M04.sample_sc_clone_assignment.updated.csv
+    output: condor_inputs/M04/character_vaf_matrix.csv, condor_inputs/M04/character_bin_matrix.csv, condor_inputs/M04/alt_readcounts.csv, condor_inputs/M04/total_readcounts.csv, condor_inputs/M04/germline_mutations.txt, condor_inputs/M04/somatic_mutations.txt
+    log: condor_inputs/M04/condor_inputs.log, condor_inputs/M04/condor_inputs.err.log (check log file(s) for error details)
+    conda-env: /home/zhangh5/work/Tapestri_batch2/pipeline_results_custom/conda/01198ab3b39d3b775749c05fbfb5806b_
+    shell:
+        
+		python /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/scripts/generate_condor_input.py 			-d M04 			-l /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/SNV_FILLOUT_results/ 			-i /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/0-opt_nclones/M04.sample_sc_clone_assignment.updated.csv 			-snvs /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/manual_annotated_snv_lists/M04-patient-all_vars-voi.hz.txt 			-v condor_inputs/M04/character_vaf_matrix.csv 			-m condor_inputs/M04/character_bin_matrix.csv 			-a condor_inputs/M04/alt_readcounts.csv 			-t condor_inputs/M04/total_readcounts.csv 			-g condor_inputs/M04/germline_mutations.txt 			-s condor_inputs/M04/somatic_mutations.txt 			1> condor_inputs/M04/condor_inputs.log 2> condor_inputs/M04/condor_inputs.err.log
+		
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 87358986 logs/cluster/condor_inputs/dataset=M04/jobid1_8ceb8e2e-7667-4bed-a095-d66e7fb03172.out
+
+Error executing rule condor_inputs on cluster (jobid: 1, external: 87358986 logs/cluster/condor_inputs/dataset=M04/jobid1_8ceb8e2e-7667-4bed-a095-d66e7fb03172.out, jobscript: /juno/work/iacobuzc/haochen/Tapestri_batch2/analysis/condor_pipeline/.snakemake/tmp.o1ulouhz/snakejob.condor_inputs.1.sh). For error details see the cluster log and the log files of the involved rule(s).
+Trying to restart job 1.
+Select jobs to execute...
+
+[Thu Nov  9 19:39:17 2023]
+rule condor_inputs:
+    input: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/0-opt_nclones/M04.sample_sc_clone_assignment.updated.csv
+    output: condor_inputs/M04/character_vaf_matrix.csv, condor_inputs/M04/character_bin_matrix.csv, condor_inputs/M04/alt_readcounts.csv, condor_inputs/M04/total_readcounts.csv, condor_inputs/M04/germline_mutations.txt, condor_inputs/M04/somatic_mutations.txt
+    log: condor_inputs/M04/condor_inputs.log, condor_inputs/M04/condor_inputs.err.log
+    jobid: 1
+    reason: Missing output files: condor_inputs/M04/character_vaf_matrix.csv, condor_inputs/M04/somatic_mutations.txt, condor_inputs/M04/alt_readcounts.csv, condor_inputs/M04/germline_mutations.txt, condor_inputs/M04/total_readcounts.csv, condor_inputs/M04/character_bin_matrix.csv
+    wildcards: dataset=M04
+    threads: 8
+    resources: mem_mb=8000, mem_mib=7630, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, time_min=118
+
+Submitted job 1 with external jobid '87358989 logs/cluster/condor_inputs/dataset=M04/jobid1_6d59e02a-e0e9-42db-bd00-6a1ea2305916.out'.
+Terminating processes on user request, this might take some time.
+1 out of 1 calls to --cluster-cancel failed.  This is safe to ignore in most cases.
+Complete log: ../full-ConDoR/.snakemake/log/2023-11-09T193759.017451.snakemake.log
