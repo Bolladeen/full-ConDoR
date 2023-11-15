@@ -10,7 +10,7 @@ import itertools
 import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
 
-def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character_matrix, df_multistate, sorted_mutation_list, cravat_df, germline_mutations, somatic_mutations):
+def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character_matrix, df_multistate, sorted_mutation_list, snv_annotations, germline_mutations, somatic_mutations):
     df_solution = df_variant_readcounts.copy()
     clustering = df_character_matrix['cluster_id']
     cell_order = list(clustering.sort_values().index)
@@ -36,18 +36,8 @@ def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character
         x = x.replace(":", "_").replace("/" , "_").split('_')
         x[2], x[3] = x[3], x[2]
         return "_".join(x)
-
-
-    mapping_dict = list(map(mut_replace, cravat_df['var_ann'].index))
-
-    mapping_dict = dict(zip(cravat_df['var_ann'].index, mapping_dict))
-
-    # Rename the index using the new_index
-    cravat_df.rename(index=mapping_dict, inplace=True)
     
-    mapping_dict = {idx:cravat_df['var_ann'].loc[idx].values[0] for idx in cravat_df['var_ann'].index}
-    
-    df_solution.rename(columns=mapping_dict, inplace=True)
+    df_solution.rename(columns=snv_annotations, inplace=True)
 
     gs = sns.clustermap(df_solution, row_cluster=False, col_cluster=False, xticklabels=1,
                        cmap=cmap, figsize=(20,10), vmin=0, vmax=3, row_colors=row_col_list)
@@ -56,15 +46,14 @@ def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character
     gs.ax_heatmap.set_xlabel('mutations', fontsize=20)
     gs.ax_heatmap.axes.set_yticklabels([])
     gs.ax_heatmap.axes.set_xticklabels(gs.ax_heatmap.axes.get_xticklabels(), size = 10)
-    
 
-    inv_mapping_dict = {v: k for k, v in mapping_dict.items()}
+    snv_annotations = {mut_replace(k): v for k, v in snv_annotations.items()}
     
     for tick_label in gs.ax_heatmap.axes.get_xticklabels():
-        if inv_mapping_dict[tick_label.get_text()] in germline_mutations:
+        if snv_annotations[tick_label.get_text()] in germline_mutations:
             tick_text = tick_label.get_text()
             tick_label.set_color('green')
-        elif inv_mapping_dict[tick_label.get_text()] in somatic_mutations:
+        elif snv_annotations[tick_label.get_text()] in somatic_mutations:
             tick_text = tick_label.get_text()
             tick_label.set_color('red')
         else: 
@@ -79,7 +68,7 @@ def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character
     
 
     
-def generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_total_readcounts, sorted_mutation_list, cravat_df, germline_mutations, somatic_mutations): 
+def generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_total_readcounts, sorted_mutation_list, snv_annotations, germline_mutations, somatic_mutations): 
 
     clustering = df_character_matrix['cluster_id']
     cell_order = list(clustering.sort_values().index)
@@ -102,22 +91,7 @@ def generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_
 
     cmap.set_under('yellow')
     
-    def mut_replace(x):
-        x = x.replace(":", "_").replace("/" , "_").split('_')
-        #x[2], x[3] = x[3], x[2]
-        return "_".join(x)
-
-
-    mapping_dict = list(map(mut_replace, cravat_df['var_ann'].index))
-
-    mapping_dict = dict(zip(cravat_df['var_ann'].index, mapping_dict))
-
-    # Rename the index using the new_index
-    cravat_df.rename(index=mapping_dict, inplace=True)
-    
-    mapping_dict = {idx:cravat_df['var_ann'].loc[idx].values[0] for idx in cravat_df['var_ann'].index}
-    
-    df_vaf.rename(columns=mapping_dict, inplace=True)
+    df_vaf.rename(columns=snv_annotations, inplace=True)
     
     print(df_vaf.columns)
     gs = sns.clustermap(df_vaf, row_cluster=False, col_cluster=False, vmin=0, vmax=1, xticklabels=1,
@@ -128,13 +102,21 @@ def generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_
     gs.ax_heatmap.axes.set_yticklabels([])
     gs.ax_heatmap.axes.set_xticklabels(gs.ax_heatmap.axes.get_xticklabels(), size = 10)
 
-    inv_mapping_dict = {v: k for k, v in mapping_dict.items()}
+    def mut_replace(x):
+        x = x.replace(":", "_").replace("/" , "_").split('_')
+        x[2], x[3] = x[3], x[2]
+        return "_".join(x)
+    snv_annotations = {mut_replace(k): v for k, v in snv_annotations.items()}
+    print("==============")
+    print(snv_annotations)
+    print("==============")
     
     for tick_label in gs.ax_heatmap.axes.get_xticklabels():
-        if inv_mapping_dict[tick_label.get_text()] in germline_mutations:
+        print(tick_label.get_text())
+        if snv_annotations[tick_label.get_text()] in germline_mutations:
             tick_text = tick_label.get_text()
             tick_label.set_color('green')
-        elif inv_mapping_dict[tick_label.get_text()] in somatic_mutations:
+        elif snv_annotations[tick_label.get_text()] in somatic_mutations:
             tick_label.set_color('red')
         else:
             tick_text = tick_label.get_text()
@@ -154,9 +136,12 @@ def main(args):
     df_variant_readcounts = pd.read_csv(args.a)
     df_total_readcounts = pd.read_csv(args.t)
     df_amplicon = pd.read_csv(args.i)
-    local_directory = args.l
-    dataset = args.d
-
+    if not "chr" not in df_amplicon.columns:
+        if "chrom" in df_amplicon.columns:
+            raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
+        else:
+            # rename
+            df_amplicon = df_amplicon.rename(columns={"chrom": "chr"})
 
     selected_mutation_list = [col for col in df_vaf.columns if col.startswith('chr')]
     
@@ -175,14 +160,12 @@ def main(args):
     sorted_mutation_list = list(df_mut_meta_selected['mutation'])
     
 
-    cravat_df = None
-    for file in os.listdir(local_directory + dataset + '/'):
-        if file.startswith(dataset):
-        # CRAVAT File
-            if file.endswith('.txt'):
-                cravat_f = local_directory + dataset + '/' + file
-                cravat_df = pd.read_csv(cravat_f, sep='\t', index_col=0, header=[0,1])
-    
+    # @HZ use annotated SNV file instead of CRAVAT
+    snvs = pd.read_csv(args.snvs, sep="\t", comment="#")
+    snvs.replace(np.nan, "", inplace=True)
+    snvs.set_index("condensed_format", inplace=True)
+    snv_annotations = snvs["HGVSp"].to_dict()
+
     germline_mutations_fp = args.g
     germline_mutations = []
     
@@ -201,10 +184,8 @@ def main(args):
             mut = line.strip()
             somatic_mutations.append(mut)
 
-
-    
-    gs_sol = generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character_matrix, df_multistate, sorted_mutation_list, cravat_df, germline_mutations, somatic_mutations)
-    gs_vaf = generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_total_readcounts, sorted_mutation_list, cravat_df, germline_mutations, somatic_mutations)
+    gs_sol = generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character_matrix, df_multistate, sorted_mutation_list, snv_annotations, germline_mutations, somatic_mutations)
+    gs_vaf = generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_total_readcounts, sorted_mutation_list, snv_annotations, germline_mutations, somatic_mutations)
 
     gs_sol.savefig(args.o) 
     gs_vaf.savefig(args.p) 
@@ -222,8 +203,11 @@ if __name__ == '__main__':
     parser.add_argument('-a', type=str, help='input path to alternate readcount matrix')
     parser.add_argument('-t', type=str, help='input path to total readcount matrix')
     parser.add_argument('-i', type=str, help='input path to amplicon panel')
-    parser.add_argument('-l', type=str, help='input path to CRAVAT files directory')
+    # parser.add_argument('-l', type=str, help='input path to CRAVAT files directory')
     parser.add_argument('-o', type=str, help='output path to CONDOR solution heatmap png')
     parser.add_argument('-p', type=str, help='output path to VAF heatmap png')
+    parser.add_argument(
+        "-snvs", type=str, default=None, help="input path to manually annotated SNVs"
+    )
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     main(args)

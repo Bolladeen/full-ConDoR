@@ -63,13 +63,12 @@ class solveFastConstrainedDollo():
             x[2], x[3] = x[3], x[2]
             return "_".join(x)
         
-        mapping_dict = list(map(mut_replace, annotations['var_ann'].index))
-        
-        mapping_dict = dict(zip(annotations['var_ann'].index, mapping_dict))
+        # mapping_dict = list(map(mut_replace, annotations['var_ann'].index))
+        # mapping_dict = dict(zip(annotations['var_ann'].index, mapping_dict))
 
-        # Rename the index using the new_index
-        annotations.rename(index=mapping_dict, inplace=True)
-        self.mapping_dict = {idx:annotations['var_ann'].loc[idx].values[0] for idx in annotations['var_ann'].index}
+        # # Rename the index using the new_index
+        # annotations.rename(index=mapping_dict, inplace=True)
+        # self.mapping_dict = {idx:annotations['var_ann'].loc[idx].values[0] for idx in annotations['var_ann'].index}
     
         self.mutation_list = list(df_character_matrix.columns[:-1])
         
@@ -328,7 +327,8 @@ class solveFastConstrainedDollo():
                     cluster = self.df_clustering.index[self.df_clustering == cluster_idx].to_list()
 
                     if self.subclonal_mutations is not None:
-                        gained_mutations.extend(self.subclonal_mutations[cluster_idx])
+                        if cluster_idx in self.subclonal_mutations.keys():
+                            gained_mutations.extend(self.subclonal_mutations[cluster_idx])
 
                     #else:
                         #if cluster_idx == 1:

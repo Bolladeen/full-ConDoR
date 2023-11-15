@@ -12,7 +12,7 @@ fi
 
 mamba activate condor
 
-snakemake -s /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/condor_pipeline.smk \
-    --configfile /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/config.yaml \
+snakemake -s /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/condor_pipeline.smk \
+    --configfile /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/config.yaml \
     --profile lsf \
-    --conda-prefix /home/zhangh5/work/Tapestri_batch2/pipeline_results_custom/conda
+    --conda-prefix /home/zhangh5/work/Tapestri_batch2/pipeline_results_custom/conda 

@@ -50,9 +50,11 @@ def main(args):
     
     subclonal_mutations = None
     
-    if args.subclonal_mutations is not None:
+    if args.subclonal_mutations is not None and os.path.isfile(args.subclonal_mutations):
         with open(args.subclonal_mutations, 'r') as file:
             subclonal_mutations = yaml.safe_load(file)
+    else:
+        print("[WARNING] subclonal mutations file not found. Proceeding without automatic subclonal mutation selection & refinement.")
 
     cn_profiles = None
 
@@ -77,16 +79,22 @@ def main(args):
     fn = args.b
     ado = args.ado
     
+    # filter mutations @HZ: what does this do?
     if args.f:
-        # filter mutations
         df_amplicon = pd.read_csv(args.m, index_col = 0)
+        if not "chr" not in df_amplicon.columns:
+            if "chrom" in df_amplicon.columns:
+                raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
+            else:
+                # rename
+                df_amplicon = df_amplicon.rename(columns={"chrom": "chr"})
         
         mutation_list = list(df_variant_readcounts.columns)
         mut_data = []
         for mutation in mutation_list:
             mut_chr = mutation.split('_')[0].lstrip('chr')
             mut_pos = int(mutation.split('_')[1])
-            mut_gene = df_amplicon[((df_amplicon['chrom'] == mut_chr) &
+            mut_gene = df_amplicon[((df_amplicon['chr'] == mut_chr) &
                                     (df_amplicon['min_pos'] <= mut_pos) &
                                     (df_amplicon['max_pos'] >= mut_pos))]['gene'].values[0]
             mut_data.append([mutation, mut_chr, mut_pos, mut_gene])
@@ -152,14 +160,15 @@ def main(args):
     
     # AKHIL additions
         cravat_df = None
-        dataset = args.d
-        local_directory = args.c
-        for file in os.listdir(local_directory + dataset + '/'):
-            if file.startswith(dataset):
-            # CRAVAT File
-                if file.endswith('.txt'):
-                    cravat_f = local_directory + dataset + '/' + file
-                    cravat_df = pd.read_csv(cravat_f, sep='\t', index_col=0, header=[0,1])
+        # @HZ 2023-11-14 removed these as they seem to be unnecessary
+        # dataset = args.d
+        # local_directory = args.c
+        # for file in os.listdir(local_directory + dataset + '/'):
+        #     if file.startswith(dataset):
+        #     # CRAVAT File
+        #         if file.endswith('.txt'):
+        #             cravat_f = local_directory + dataset + '/' + file
+        #             cravat_df = pd.read_csv(cravat_f, sep='\t', index_col=0, header=[0,1])
 
     solver = solveFastConstrainedDollo(df_character_matrix, df_total_readcounts=df_total_readcounts,
                                        df_variant_readcounts=df_variant_readcounts,
@@ -175,7 +184,7 @@ def main(args):
     
     if solver.solT_cell is not None:
         with open(f'{prefix}_tree.newick', 'w') as out:
-                out.write(tree_to_newick(solver.solT_cell) + ';')
+            out.write(tree_to_newick(solver.solT_cell) + ';')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -1,0 +1,58 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 3000
+Job stats:
+job                  count
+-----------------  -------
+all                      1
+fast_condor              1
+generate_heatmaps        2
+total                    4
+
+Select jobs to execute...
+
+[Thu Nov  9 20:05:58 2023]
+rule fast_condor:
+    input: condor_inputs/RA17_13/character_bin_matrix.csv, condor_inputs/RA17_13/alt_readcounts.csv, condor_inputs/RA17_13/total_readcounts.csv, condor_inputs/RA17_13/germline_mutations.txt, condor_inputs/RA17_13/somatic_mutations.txt
+    output: condor_outputs/RA17_13/out_tree.newick
+    log: condor_outputs/RA17_13/condor_outputs.log, condor_outputs/RA17_13/condor_outputs.err.log
+    jobid: 4
+    reason: Missing output files: condor_outputs/RA17_13/out_tree.newick, condor_outputs/RA17_13/condor_outputs.log; Updated input files: condor_inputs/RA17_13/germline_mutations.txt, condor_inputs/RA17_13/alt_readcounts.csv, condor_inputs/RA17_13/somatic_mutations.txt, condor_inputs/RA17_13/total_readcounts.csv, condor_inputs/RA17_13/character_bin_matrix.csv
+    wildcards: dataset=RA17_13
+    threads: 4
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, mem_gb=16, time_min=119
+
+Submitted job 4 with external jobid '87359090 logs/cluster/fast_condor/dataset=RA17_13/jobid4_a4b568ad-773a-4d37-8876-0059e369860d.out'.
+[Thu Nov  9 20:06:59 2023]
+Error in rule fast_condor:
+    jobid: 4
+    input: condor_inputs/RA17_13/character_bin_matrix.csv, condor_inputs/RA17_13/alt_readcounts.csv, condor_inputs/RA17_13/total_readcounts.csv, condor_inputs/RA17_13/germline_mutations.txt, condor_inputs/RA17_13/somatic_mutations.txt
+    output: condor_outputs/RA17_13/out_tree.newick
+    log: condor_outputs/RA17_13/condor_outputs.log, condor_outputs/RA17_13/condor_outputs.err.log (check log file(s) for error details)
+    conda-env: condor
+    shell:
+        
+		python /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/fast-ConDoR/src/fast-condor.py 			-i condor_inputs/RA17_13/character_bin_matrix.csv 			-r condor_inputs/RA17_13/total_readcounts.csv 			-v condor_inputs/RA17_13/alt_readcounts.csv 			-s condor_inputs/RA17_13/germline_mutations.txt 			-s2 condor_inputs/RA17_13/somatic_mutations.txt 			-o condor_outputs/RA17_13/out 			-m /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/references/amplicon_panel.csv 			-c /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/SNV_FILLOUT_results/ 			-d RA17_13 			1> condor_outputs/RA17_13/condor_outputs.log 2> condor_outputs/RA17_13/condor_outputs.err.log
+		
+        (one of the commands exited with non-zero exit code; note that snakemake uses bash strict mode!)
+    cluster_jobid: 87359090 logs/cluster/fast_condor/dataset=RA17_13/jobid4_a4b568ad-773a-4d37-8876-0059e369860d.out
+
+Error executing rule fast_condor on cluster (jobid: 4, external: 87359090 logs/cluster/fast_condor/dataset=RA17_13/jobid4_a4b568ad-773a-4d37-8876-0059e369860d.out, jobscript: /juno/work/iacobuzc/haochen/Tapestri_batch2/analysis/condor_pipeline/.snakemake/tmp.tfk3fr1n/snakejob.fast_condor.4.sh). For error details see the cluster log and the log files of the involved rule(s).
+Trying to restart job 4.
+Select jobs to execute...
+
+[Thu Nov  9 20:06:59 2023]
+rule fast_condor:
+    input: condor_inputs/RA17_13/character_bin_matrix.csv, condor_inputs/RA17_13/alt_readcounts.csv, condor_inputs/RA17_13/total_readcounts.csv, condor_inputs/RA17_13/germline_mutations.txt, condor_inputs/RA17_13/somatic_mutations.txt
+    output: condor_outputs/RA17_13/out_tree.newick
+    log: condor_outputs/RA17_13/condor_outputs.log, condor_outputs/RA17_13/condor_outputs.err.log
+    jobid: 4
+    reason: Missing output files: condor_outputs/RA17_13/out_tree.newick, condor_outputs/RA17_13/condor_outputs.log; Updated input files: condor_inputs/RA17_13/germline_mutations.txt, condor_inputs/RA17_13/alt_readcounts.csv, condor_inputs/RA17_13/somatic_mutations.txt, condor_inputs/RA17_13/total_readcounts.csv, condor_inputs/RA17_13/character_bin_matrix.csv
+    wildcards: dataset=RA17_13
+    threads: 8
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, mem_gb=16, time_min=238
+
+Submitted job 4 with external jobid '87359102 logs/cluster/fast_condor/dataset=RA17_13/jobid4_40531358-0e96-46eb-900b-d52d49805c2f.out'.
+Terminating processes on user request, this might take some time.
+1 out of 1 calls to --cluster-cancel failed.  This is safe to ignore in most cases.
+Complete log: ../full-ConDoR/.snakemake/log/2023-11-09T200550.156272.snakemake.log
