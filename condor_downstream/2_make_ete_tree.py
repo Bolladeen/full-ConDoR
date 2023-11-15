@@ -35,13 +35,13 @@ from Bio.SeqUtils import seq1
 
 # plot_info_dir = Path('/home/zhangh5/work/Tapestri_batch2/analysis/condor_downstream/AJ-all_cases_plot_info-before_refinement-oct03/plot_info-oct-2')
 
-opt_nclones_dir = Path("/home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/0-opt_nclones")
-manual_snv_dir = Path('/home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/manual_annotated_snv_lists')
-condor_input_dir = Path("/home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/condor_inputs")
-pickle_dir = Path("/home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/results/pickle_files")
+opt_nclones_dir = Path("/n/fs/ragr-research/users/aj7381/CONDOR/full-ConDoR/results/opt_nclones")
+manual_snv_dir = Path('/n/fs/ragr-research/users/aj7381/falcon/transfer_to_RRG/manual_annotated_snv_lists')
+condor_input_dir = Path("/n/fs/ragr-research/users/aj7381/CONDOR/full-ConDoR/results/condor_inputs")
+pickle_dir = Path("/n/fs/ragr-research/users/aj7381/CONDOR/full-ConDoR/results/pickle_files")
 
 
-output_dir = Path('/home/zhangh5/work/Tapestri_batch2/analysis/condor_downstream/HZ_ete_trees_refined')
+output_dir = Path('/n/fs/ragr-research/users/aj7381/CONDOR/full-ConDoR/condor_downstream/AJ_ete_trees_refined')
 
 # # For RA15_06
 # plot_info_dir = Path("/home/zhangh5/work/Tapestri_batch2/analysis/per_case/M04")
@@ -77,10 +77,10 @@ for patient_name in patient_names:
     # 2. CN clone assignment for each single cell
     # 3. VAF matrix
 
-    falcon_cn_profiles_f = opt_nclones_dir / f'{patient_name}.unique_cn_clone_profiles.csv'
+    falcon_cn_profiles_f = opt_nclones_dir / f'{patient_name}' / f'optimal_clone_profiles.csv'
     falcon_cn_profiles = pd.read_csv(falcon_cn_profiles_f, index_col=0)
 
-    cn_clone_assignment_f = opt_nclones_dir /f'{patient_name}.sample_sc_clone_assignment.updated.csv'
+    cn_clone_assignment_f = opt_nclones_dir /f'{patient_name}' / 'optimal_cell_assignments.csv'
     cn_clone_assignment_df = pd.read_csv(cn_clone_assignment_f, index_col=0)
     cn_clone_assignment_df.index.name = 'sample_name'
     # get rid of sample RA18_18-11_1
@@ -107,7 +107,7 @@ for patient_name in patient_names:
     cn_clone_sizes_for_plotting = {k: v / max(cn_clone_sizes.values()) * 800 for k, v in cn_clone_sizes.items()}
 
     # read amplicon gene-name mapping file
-    amplicon_gene_mapping_f = '/home/zhangh5/work/Tapestri_project/cn-calling/reference/panel3559_analysis.gene_cytoband.formatted.manual_adjusted.txt'
+    amplicon_gene_mapping_f =   '/n/fs/ragr-research/users/aj7381/CONDOR/full-ConDoR/references/amplicon_panel.csv'
     amplicon_gene_mapping = pd.read_csv(amplicon_gene_mapping_f, sep='\t',)
     amplicon_gene_mapping = amplicon_gene_mapping.loc[amplicon_gene_mapping['amplicon_number'].isin(condor_cn_clone_profiles.columns)]
     # we are only interested in genes that have >= 3 amplicons covering them
@@ -115,7 +115,7 @@ for patient_name in patient_names:
     amplicons_of_interest = amplicon_gene_mapping.loc[amplicon_gene_mapping['gene_name'].isin(genes_of_interest), 'amplicon_number'].unique()
 
     # %% Read in SNV annotation info
-    manual_snv_f = manual_snv_dir / f'{patient_name}-patient-all_vars-voi.hz_curated.txt'
+    manual_snv_f = manual_snv_dir / f'{patient_name}-patient-all_vars-voi.hz.txt'
     manual_snv = pd.read_csv(manual_snv_f, sep='\t', index_col=0, comment = '#')
     manual_snv['annotation'].fillna('', inplace=True)
     manual_snv['var_formatted'] = manual_snv.index.str.replace(':', '_').str.replace('/', '_')
