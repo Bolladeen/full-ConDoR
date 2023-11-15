@@ -50,9 +50,11 @@ def main(args):
     
     subclonal_mutations = None
     
-    if args.subclonal_mutations is not None:
+    if args.subclonal_mutations is not None and os.path.isfile(args.subclonal_mutations):
         with open(args.subclonal_mutations, 'r') as file:
             subclonal_mutations = yaml.safe_load(file)
+    else:
+        print("[WARNING] subclonal mutations file not found. Proceeding without automatic subclonal mutation selection & refinement.")
 
     cn_profiles = None
 
@@ -158,14 +160,15 @@ def main(args):
     
     # AKHIL additions
         cravat_df = None
-        dataset = args.d
-        local_directory = args.c
-        for file in os.listdir(local_directory + dataset + '/'):
-            if file.startswith(dataset):
-            # CRAVAT File
-                if file.endswith('.txt'):
-                    cravat_f = local_directory + dataset + '/' + file
-                    cravat_df = pd.read_csv(cravat_f, sep='\t', index_col=0, header=[0,1])
+        # @HZ 2023-11-14 removed these as they seem to be unnecessary
+        # dataset = args.d
+        # local_directory = args.c
+        # for file in os.listdir(local_directory + dataset + '/'):
+        #     if file.startswith(dataset):
+        #     # CRAVAT File
+        #         if file.endswith('.txt'):
+        #             cravat_f = local_directory + dataset + '/' + file
+        #             cravat_df = pd.read_csv(cravat_f, sep='\t', index_col=0, header=[0,1])
 
     solver = solveFastConstrainedDollo(df_character_matrix, df_total_readcounts=df_total_readcounts,
                                        df_variant_readcounts=df_variant_readcounts,
