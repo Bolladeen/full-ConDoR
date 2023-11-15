@@ -1,44 +1,56 @@
-workdir: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline
+#workdir: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline
+
+workdir: /n/fs/ragr-research/users/aj7381/CONDOR/full-ConDoR
 
 datasets:
   - M04
-  # - M07
-  # - M11
-  # - M12
-  # - M13
-  # - RA15_06
-  # - RA15_16
-  # - RA16_08
-  # - RA16_29
-  # - RA17_13
-  # - RA17_22
-  # - RA19_02
-  # - RA19_10
-  # - RA19_21
-  # - RA20_05
-  # - RA21_17
-  # - TP6
-  # - TP12
+  - M07
+  - M11
+  - M12
+  - M13
+  - RA15_06
+  - RA15_16
+  - RA16_08
+  - RA16_29
+  - RA17_13
+  - RA17_22
+  - RA19_02
+  - RA19_10
+  - RA19_21
+  - RA20_05
+  - RA21_17
+  - TP6
+  - TP12
 
 # ===== centralized data directory =====
-falcon_solutions: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/opt_nclones
-raw_data_directory: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/SNV_FILLOUT_results/
-annotated_mutations: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/manual_annotated_snv_lists/
-readcount_directory: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/raw_read_counts/
+#falcon_solutions: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/opt_nclones/
+#raw_data_directory: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/SNV_FILLOUT_results/
+#annotated_mutations: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/manual_annotated_snv_lists/
+#readcount_directory: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/raw_read_counts/
+
+falcon_solutions: '/n/fs/ragr-research/users/aj7381/falcon/transfer_to_RRG/falcon_results/'
+raw_data_directory: '/n/fs/ragr-research/users/aj7381/falcon/transfer_to_RRG/SNV_FILLOUT_results/'
+annotated_mutations: '/n/fs/ragr-research/users/aj7381/falcon/transfer_to_RRG/manual_annotated_snv_lists/'
+amplicon_parameters: '/n/fs/ragr-data/users/palash/mskcc-analysis/panel2_amplicon.csv'
+readcount_directory: '/n/fs/ragr-research/users/aj7381/falcon/transfer_to_RRG/raw_read_counts/'
+
 
 # ===== scripts and params =====
-amplicon_parameters: /home/zhangh5/work/Tapestri_batch2/analysis/cn_clones/train-normal_samples/train-combined_8_normals/NB_train-combined_8_normals-results.gene_added.csv
-condor_pipeline_scripts_dir: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/scripts
-fast_condor_script: /home/zhangh5/work/Tapestri_batch2/analysis/fast-ConDoR/src/fast-condor.py
+#amplicon_parameters: /home/zhangh5/work/Tapestri_batch2/analysis/cn_clones/train-normal_samples/train-combined_8_normals/NB_train-combined_8_normals-results.gene_added.csv
+#condor_pipeline_scripts_dir: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/scripts
+#fast_condor_script: /home/zhangh5/work/Tapestri_batch2/analysis/fast-ConDoR/src/fast-condor.py
 
-# nclones:
-#     - 2
-#     - 3
-#     - 4
-#     - 5
-#     - 6
-#     - 7
-#     - 8
-#     - 9
-#     - 10
+condor_pipeline_scripts_dir: /n/fs/ragr-research/users/aj7381/CONDOR/full-ConDoR/scripts
+fast_condor_script: /n/fs/ragr-research/users/aj7381/CONDOR/full-ConDoR/fast-ConDoR/src/fast-condor.py 
+
+nclones:
+  #- 2
+ - 3
+ - 4
+ - 5
+ - 6
+ - 7
+ - 8
+ - 9
+ - 10
 

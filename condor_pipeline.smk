@@ -3,16 +3,38 @@ from pathlib import Path
 workdir: config["workdir"]
 
 rule all:
-	input:
-		# expand("{dataset}/opt_nclones/optimal_cell_assignments.csv", dataset=config["datasets"]),
+  input:
+		expand("{dataset}/opt_nclones/optimal_cell_assignments.csv", dataset=config["datasets"]),
 		# expand("{dataset}/clonal_refinement/refined_cell_assignments.csv", dataset=config["datasets"]),
 		expand("condor_inputs/{dataset}/character_vaf_matrix.csv", dataset=config["datasets"]),
 		expand("condor_outputs/{dataset}/condor_outputs.log", dataset=config["datasets"]),
 		expand("condor_outputs/{dataset}/heatmaps/condor_solution_heatmap.png", dataset=config["datasets"]),
 
+
+rule opt_nclones:
+  params:
+    falcon_solutions=config['falcon_solutions'],
+    nclones=config['nclones'],
+  output:
+    result_clone_assignment='results/{dataset}/opt_nclones/optimal_cell_assignments.csv',
+    result_cn_profile='results/{dataset}/opt_nclones/optimal_clone_profiles.csv',
+  log:
+    std='results/{dataset}/opt_nclones/opt_nclones.log',
+    err='results/{dataset}/opt_nclones/opt_nclones.err.log',
+  shell:
+      """
+      python scripts/select_optimal_nclones.py \
+        -d {wildcards.dataset} \
+        -c {params.nclones} \
+        -i {params.falcon_solutions}{wildcards.dataset}/solutions/  \
+        -a {output.result_clone_assignment}  \
+        -p {output.result_cn_profile} \
+        1> {log.std} 2> {log.err}'
+      """
 rule condor_inputs:
 	input:
-		refined_clone_assignment = lambda wildcards: f"{config['falcon_solutions']}/{wildcards.dataset}.sample_sc_clone_assignment.updated.csv",
+    refined_clone_assignment='results/{dataset}/opt_nclones/optimal_cell_assignments.csv',
+    # refined_clone_assignment = lambda wildcards: f"{config['falcon_solutions']}{wildcards.dataset}.sample_sc_clone_assignment.updated.csv",
 		# "opt_nclones/{dataset}.sample_sc_clone_assignment.updated.csv",
 	output:
 		character_vaf="condor_inputs/{dataset}/character_vaf_matrix.csv",
@@ -58,6 +80,7 @@ rule fast_condor:
 		total_readcounts="condor_inputs/{dataset}/total_readcounts.csv",
 		germline_mutations="condor_inputs/{dataset}/germline_mutations.txt",
 		somatic_mutations="condor_inputs/{dataset}/somatic_mutations.txt",
+    cn_profiles='results/{dataset}/opt_nclones/optimal_clone_profiles.csv',
 	params:
 		fast_condor_script = config["fast_condor_script"],
 		amplicon_parameters = config["amplicon_parameters"],
@@ -84,6 +107,8 @@ rule fast_condor:
 			-m {params.amplicon_parameters} \
 			-c {params.hdf5_directory} \
 			-d {wildcards.dataset} \
+      --scr \
+      --cnp {input.cn_profiles} \
 			1> {log.std} 2> {log.err}
 		"""
 
