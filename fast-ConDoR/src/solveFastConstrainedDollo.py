@@ -355,9 +355,13 @@ class solveFastConstrainedDollo():
                         subclonal_snvs[cluster_idx] = gained_mutations
                         cell_attachments[cluster_idx] = {}
                         cell_attachments[cluster_idx][gained_mutations[0] + '_4'] = []
+                        cell_attachments[cluster_idx][cluster_idx] = []
                         for cell in cluster:
                             if self.character_coeff_dict[1].at[cell, gained_mutations[0]] > self.character_coeff_dict[0].at[cell, gained_mutations[0]]:
                                 cell_attachments[cluster_idx][gained_mutations[0] + '_4'].append(cell)
+                            else:
+                                cell_attachments[cluster_idx][cluster_idx].append(cell)
+
                     else:
                         solver = solveConstrainedDollo(self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001, ado_precision=50)
                         solver.solveSetInclusion(1800)
@@ -366,8 +370,7 @@ class solveFastConstrainedDollo():
                 for c, m in subclonal_snvs.items():
                     if m is not None:
                         if type(m) is list:
-                            self.solT_cell.add_edge(c, 'subtree_root' + f'_{c}')
-                            self.solT_cell.add_edge('subtree_root' + f'_{c}', m[0] + '_4')
+                            self.solT_cell.add_edge(c, m[0] + '_4')
                             if len(m) > 1:
                                 for i in range(1, len(m)):
                                     self.solT_cell.add_edge(m[i-1] + '_4', m[i] + '_4')
@@ -377,8 +380,7 @@ class solveFastConstrainedDollo():
                                 edge0, edge1 = edge.split(' ')
                                 if edge1.startswith('cell') == False:
                                     if edge0 == 'root':
-                                        self.solT_cell.add_edge(c, 'subtree_root' + f'_{c}')
-                                        self.solT_cell.add_edge('subtree_root' + f'_{c}', edge1[:-1] + '4')
+                                        self.solT_cell.add_edge(c, edge1[:-1] + '4')
                                     else:
                                         self.solT_cell.add_edge(edge0[:-1] + '4', edge1[:-1] + '4')
                                 else:
@@ -493,7 +495,8 @@ class solveFastConstrainedDollo():
                                     g.add_edge(predecessor, successor)
                                     new_edges.append((predecessor, successor))
                 return g, new_edges
-
+            
+            print(self.df_clustering.value_counts())
             for chain in optimizable_subchains:
                 chain_root = list(self.solT_cell.predecessors(chain[0]))[0]
                 chain_tail = list(self.solT_cell.successors(chain[-1]))
@@ -553,7 +556,6 @@ class solveFastConstrainedDollo():
                     self.solT_cell.add_edge(last_edge, chain_t)
 
 
-            
 
             directory = './results/pickle_files/'
             if not os.path.exists(directory):
@@ -561,9 +563,14 @@ class solveFastConstrainedDollo():
             with open(f'{directory}{self.sample}_self.solT_cell', 'wb') as file:
                 pickle.dump(self.solT_cell, file)
             
+            total_cells = 0
             for node in self.solT_cell.nodes:
                 if 'cell_attachment' in self.solT_cell.nodes[node]:
+                    if type(node) == int or node[-1] == '4':
+                        total_cells += len(self.solT_cell.nodes[node]['cell_attachment'])
                     print(f"Node {node}: {len(self.solT_cell.nodes[node]['cell_attachment'])}")
+
+            print('total cells', total_cells)
 
     def writeSolution(self, fname):
         if self.solB is not None:
@@ -635,107 +642,14 @@ class solveFastConstrainedDollo():
             
             idx_dict = {}
             idx = 0
-            beautify = False 
             if writeTree is not None:
                 
-                edgeset = defaultdict(list)
-                for edge in writeTree.edges:
-                    edgeset[str(edge[0])].append(edge[1])
-                compressed_edgeset = []
-                for k,v in edgeset.items():
-                    if k == 'root':
-                        compressed_edgeset.append(set([k]))
-                    else:
-                        if len(v) == 1:
-                            if str(v[0]).isdigit():
-                                compressed_edgeset.append(set([str(v[0])]))
-                            else:
-                                found = False
-                                for i, elem in enumerate(compressed_edgeset):
-                                    if k in elem or v[0] in elem:
-                                        compressed_edgeset[i] = elem.union(set([k, v[0]]))
-                                        found = True
-                                if found == False:
-                                    compressed_edgeset.append(set([k, v[0]]))
-                        else:
-                            for value in v:
-                                compressed_edgeset.append(set([str(value)]))
+                for node in writeTree.nodes:
+                    idx_dict[node] = idx
+                    output.write(f'\t{idx} [label=\"{node}\", style=\"bold\"];\n')
+                    idx += 1
                 
-                if beautify:
-                    internal_node_idx = 0
-                    node_dict = {}
-                    for s in compressed_edgeset:
-                        if str(list(s)[0]).isdigit() == False:
-                            if str(list(s)[0]) == 'root':
-                                output.write(f'\t{idx} [label=\"root\", style=\"bold\"];\n')
-                                node_dict['root'] = idx
-
-                            else:
-                                output.write(f'\t{idx} [label=\"n{internal_node_idx}\", style=\"bold\"];\n')
-                                for i, value in enumerate(s):
-                                    node_dict[value] = idx
-                                internal_node_idx += 1
-                        else:
-                            output.write(f'\t{idx} [label=\"')
-                            for i, value in enumerate(s):
-                                if i == len(s) - 1:
-                                    output.write(f'{value}')
-                                else:
-                                    output.write(f'{value}\\n')
-                                node_dict[value] = idx
-                            output.write('\", style=\"bold\"];\n')
-                        idx_dict[idx] = s
-                        idx += 1
-                    
-                    test = defaultdict(list)
-                    for i in self.snp_list:
-                        test[self.mapping_dict[i]].append(i)
-
-                    
-                    som_event_dict = {"0": "MISSING", "1": "GAIN", "2": "LOSS", "3": "LOH", "11": 'SUBCLONAL'}
-                    germ_event_dict = {"0": "MISSING", "2": "LOSS", "3": "LOH", "11": 'SUBCLONAL'}
-                    event_color = {"GAIN": "<font color = \"blue\">", "LOSS": "<font color = \"orange\">", "LOH": "<font color = \"black\">", "MISSING": "<font color = \"yellow\">"}
-                    for edge in writeTree.edges:
-                        if node_dict[str(edge[0])] != node_dict[str(edge[1])]:
-                            if str(list(idx_dict[node_dict[str(edge[1])]])[0]).isdigit() == False:
-                                output.write(f"\t{node_dict[str(edge[0])]} -> {node_dict[str(edge[1])]} [label=<")
-                                for i, value in enumerate(idx_dict[node_dict[str(edge[1])]]):
-                                    is_germline = False
-                                    is_somatic = False
-                                    color = "<font color = \"black\">"
-                                    if value[:-2] in self.snp_list:
-                                        color = "<font color = \"green\">"
-                                        is_germline = True
-                                    if value[:-2] in self.snv_list:
-                                        color = "<font color = \"red\">"
-                                        is_somatic = True
-                                    if i == len(idx_dict[node_dict[str(edge[1])]]) - 1:
-                                        if is_germline:
-                                            output.write(f'{color}{self.mapping_dict[value[:-2]]} </font> {event_color[germ_event_dict[value[-1:]]]} {germ_event_dict[value[-1:]]} </font> ')
-                                        elif is_somatic:
-                                            output.write(f'{color}{self.mapping_dict[value[:-2]]} </font> {event_color[som_event_dict[value[-1:]]]} {som_event_dict[value[-1:]]}</font>')
-                                        else:
-                                            output.write(f'{color}{value[:-2]} </font> {event_color[som_event_dict[value[-1:]]]} {som_event_dict[value[-1:]]}</font>')
-
-                                    else:
-                                        if is_germline:
-                                            output.write(f'{color}{self.mapping_dict[value[:-2]]} </font> {event_color[germ_event_dict[value[-1:]]]} {germ_event_dict[value[-1:]]} </font><br/>')
-                                        elif is_somatic:
-                                            output.write(f'{color}{self.mapping_dict[value[:-2]]} </font> {event_color[som_event_dict[value[-1:]]]} {som_event_dict[value[-1:]]}</font><br/>')
-                                        else:
-                                            output.write(f'{color}{value[:-2]} </font> {event_color[som_event_dict[value[-1:]]]} {som_event_dict[value[-1:]]}</font><br/>')
-
-                                output.write('>, style=\"bold\"];\n')
-                            else: 
-                                output.write(f"\t{node_dict[str(edge[0])]} -> {node_dict[str(edge[1])]} [style=\"bold\"];\n")
-
-                else:
-                    for node in writeTree.nodes:
-                        idx_dict[node] = idx
-                        output.write(f'\t{idx} [label=\"{node}\", style=\"bold\"];\n')
-                        idx += 1
-                    
-                    for edge in writeTree.edges:
+                for edge in writeTree.edges:
                         output.write(f"\t{idx_dict[edge[0]]} -> {idx_dict[edge[1]]} [style=\"bold\"];\n")
 
                 output.write(f'}}')
