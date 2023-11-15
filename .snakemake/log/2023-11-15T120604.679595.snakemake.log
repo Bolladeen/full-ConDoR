@@ -1,0 +1,58 @@
+Building DAG of jobs...
+Using shell: /usr/bin/bash
+Provided cluster nodes: 3000
+Job stats:
+job                  count
+-----------------  -------
+all                      1
+fast_condor              1
+generate_heatmaps        1
+total                    3
+
+Select jobs to execute...
+
+[Wed Nov 15 12:06:10 2023]
+rule fast_condor:
+    input: condor_inputs/M04/character_bin_matrix.csv, condor_inputs/M04/alt_readcounts.csv, condor_inputs/M04/total_readcounts.csv, condor_inputs/M04/germline_mutations.txt, condor_inputs/M04/somatic_mutations.txt, /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/0-opt_nclones/M04.unique_cn_clone_profiles.csv
+    output: condor_outputs/M04/out_tree.newick
+    log: condor_outputs/M04/condor_outputs.log, condor_outputs/M04/condor_outputs.err.log
+    jobid: 2
+    reason: Missing output files: condor_outputs/M04/condor_outputs.log, condor_outputs/M04/out_tree.newick
+    wildcards: dataset=M04
+    threads: 4
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, mem_gb=16, time_min=119
+
+Submitted job 2 with external jobid '87873445 logs/cluster/fast_condor/dataset=M04/jobid2_82951dc5-6f54-4f3d-9ac9-933b4c7ab544.out'.
+[Wed Nov 15 12:06:40 2023]
+Finished job 2.
+1 of 3 steps (33%) done
+Select jobs to execute...
+
+[Wed Nov 15 12:06:40 2023]
+rule generate_heatmaps:
+    input: condor_outputs/M04/condor_outputs.log, condor_inputs/M04/character_vaf_matrix.csv, condor_inputs/M04/alt_readcounts.csv, condor_inputs/M04/total_readcounts.csv, condor_inputs/M04/character_bin_matrix.csv, condor_inputs/M04/germline_mutations.txt, condor_inputs/M04/somatic_mutations.txt, /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/manual_annotated_snv_lists/M04-patient-all_vars-voi.hz_curated.txt
+    output: condor_outputs/M04/heatmaps/vaf_heatmap.png, condor_outputs/M04/heatmaps/condor_solution_heatmap.png
+    log: condor_outputs/M04/heatmaps/heatmaps.log, condor_outputs/M04/heatmaps/heatmaps.err.log
+    jobid: 3
+    reason: Missing output files: condor_outputs/M04/heatmaps/condor_solution_heatmap.png; Input files updated by another job: condor_outputs/M04/condor_outputs.log
+    wildcards: dataset=M04
+    threads: 4
+    resources: mem_mb=8000, mem_mib=7630, disk_mb=1000, disk_mib=954, tmpdir=<TBD>, time_min=59
+
+Submitted job 3 with external jobid '87873699 logs/cluster/generate_heatmaps/dataset=M04/jobid3_5e2de57a-b695-4a79-aa95-5799b481ee05.out'.
+[Wed Nov 15 12:07:00 2023]
+Finished job 3.
+2 of 3 steps (67%) done
+Select jobs to execute...
+
+[Wed Nov 15 12:07:00 2023]
+localrule all:
+    input: condor_inputs/M04/character_vaf_matrix.csv, condor_outputs/M04/out_tree.newick, condor_outputs/M04/heatmaps/condor_solution_heatmap.png
+    jobid: 0
+    reason: Input files updated by another job: condor_outputs/M04/heatmaps/condor_solution_heatmap.png, condor_outputs/M04/out_tree.newick
+    resources: mem_mb=1000, mem_mib=954, disk_mb=1000, disk_mib=954, tmpdir=/scratch/username
+
+[Wed Nov 15 12:07:00 2023]
+Finished job 0.
+3 of 3 steps (100%) done
+Complete log: ../full-ConDoR/.snakemake/log/2023-11-15T120604.679595.snakemake.log
