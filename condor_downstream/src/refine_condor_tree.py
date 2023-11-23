@@ -82,7 +82,7 @@ def merge_clones_into_diploid(
     leaves_to_merge_to_diploid = []
     total_cell_num = 0
     for leaf in ete_tree.get_leaves():
-        total_cell_num += leaf.leaf_size
+        total_cell_num += leaf.clone_size
 
     pre_diploid_events = []
 
@@ -91,7 +91,7 @@ def merge_clones_into_diploid(
             pre_diploid_events += list(n.somatic_snv_events.keys()) + list(n.germline_snp_events.keys())
 
     for leaf in ete_tree.get_leaves():
-        logger.info(f"leaf: {leaf.name}, clone size: {leaf.leaf_size}")
+        logger.info(f"leaf: {leaf.name}, clone size: {leaf.clone_size}")
 
         if leaf.name == '':
             logger.info(f"leaf {leaf.name} has no name, removing")
@@ -99,10 +99,10 @@ def merge_clones_into_diploid(
         elif leaf is diploid_clone:
             logger.info(f"leaf {leaf.name} is the diploid, skipping")
             continue
-        elif leaf.leaf_size < 0.001 * total_cell_num:
-            logger.info(f"leaf {leaf.name} has a clone size of {leaf.leaf_size}, smaller than {min_leaf_size*100}% of total cell number, merging into diploid")
+        elif leaf.clone_size < 0.001 * total_cell_num:
+            logger.info(f"leaf {leaf.name} has a clone size of {leaf.clone_size}, smaller than {min_leaf_size*100}% of total cell number, merging into diploid")
             logger.warning(f"merging leaf {leaf.name} into diploid_clone {diploid_clone.name}")
-            diploid_clone.leaf_size += leaf.leaf_size
+            diploid_clone.clone_size += leaf.clone_size
             leaves_to_merge_to_diploid.append(leaf.name)
             # @HZ 2023-09-21: it's problematic to delete leaves here, as the internal node events will always get removed if there's <2 leaves left!
             # leaf.delete()
@@ -122,19 +122,19 @@ def merge_clones_into_diploid(
             if len(events) == 0:
                 logger.info(f"leaf {leaf.name} has no events to the root, merging into diploid")
                 logger.warning(f"merging leaf {leaf.name} into diploid {diploid_clone.name}")
-                diploid_clone.leaf_size += leaf.leaf_size
+                diploid_clone.clone_size += leaf.clone_size
                 leaves_to_merge_to_diploid.append(leaf.name)
                 # @HZ 2023-09-21: this is ok, because there's no internal node event to consider
                 leaf.delete()
             elif events == pre_diploid_events and rm_clones_with_same_snv_events_as_diploid:
                 logger.info(f"leaf {leaf.name} has the same events as the diploid, merging into diploid")
                 logger.warning(f"merging leaf {leaf.name} into diploid {diploid_clone.name}")
-                diploid_clone.leaf_size += leaf.leaf_size
+                diploid_clone.clone_size += leaf.clone_size
                 leaves_to_merge_to_diploid.append(leaf.name)
             elif len(somatic_snv_events) == 0 and rm_clones_with_no_somatic_snv_events:
                 logger.info(f"leaf {leaf.name} has no somatic SNV events, merging into diploid")
                 logger.warning(f"merging leaf {leaf.name} into diploid {diploid_clone.name}")
-                diploid_clone.leaf_size += leaf.leaf_size
+                diploid_clone.clone_size += leaf.clone_size
                 leaves_to_merge_to_diploid.append(leaf.name)
             else:
                 logger.info(f"leaf {leaf.name} has {len(events)} events to the root")
@@ -194,7 +194,9 @@ def adjust_clone_number_and_color(ete_tree, diploid_clone_name, color_sequence =
         clone_color = color_sequence[clone_rename_map[leaf.name]]
         if clone_color.startswith('rgb'):
             clone_color = rgb_string_to_hex(clone_color)
-        leaf.leaf_color = clone_color
+        leaf.add_features(
+            clone_color = clone_color
+        )
         print(f"renaming clone {leaf.name} to {clone_rename_map[leaf.name]}")
         leaf.name = str(clone_rename_map[leaf.name])
     
