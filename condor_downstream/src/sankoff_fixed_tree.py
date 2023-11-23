@@ -1,49 +1,60 @@
 # import everything
 import numpy as np
 import pandas as pd
+import logging
 
+logger = logging.getLogger(__name__)
 
-def get_sankoff_min_parsimony_tree(tree, cn_profiles, amplicons_of_interest=None):
+def get_sankoff_min_parsimony_tree(ete_tree, amplicons_of_interest=None):
     """
     Label internal vertices' copy number states, calculate branch lengths using the Sankoff algorithm
 
     Parameters
     ----------
-    tree: ete3.Tree
+    ete_tree: ete3.Tree
         The leaves should all have a cn_profile attribute
-
-    cn_profiles: pd.DataFrame
-        A dataframe with rows as individual leaves and columns as amplicons
     
     amplicons_of_interest: list of str
         A list of amplicon names that we are interested in
     """
 
     # sanity check:
+    for l in ete_tree.get_leaves():
+        if not hasattr(l, "cn_profile"):
+            raise ValueError(f"Leaf {l.name} does not have a cn_profile attribute!")
 
-    for l in tree.get_leaves():
-        if not int(l.name) in cn_profiles.index:
-            raise ValueError(f"Leaf {l.name} is not in the cn_profiles dataframe")
+    # construct a cn_profiles dataframe
+    cn_profiles = pd.DataFrame(
+        [l.cn_profile for l in ete_tree.get_leaves()],
+        index = [l.name for l in ete_tree.get_leaves()]
+    )
 
     if amplicons_of_interest is None:
         amplicons_of_interest = cn_profiles.columns
+    else:
+        logger.warning(f"""
+            amplicons of interest: {
+            [a for a in amplicons_of_interest if not a in cn_profiles.columns]
+            } not in the tree, ignoring
+        """)
+        amplicons_of_interest = [a for a in amplicons_of_interest if a in cn_profiles.columns]
     # aoi_index = [i for i, amplicon in enumerate(cn_profiles.columns) if amplicon in amplicons_of_interest]
     max_cn_state = int(max(cn_profiles[amplicons_of_interest].max()))
 
-    num_nodes = len(tree.get_descendants()) # don't consider root node
+    num_nodes = len(ete_tree.get_descendants()) # don't consider root node
     DP = np.zeros((num_nodes, int(max_cn_state) + 1, cn_profiles.shape[1]))
     DP[:] = np.inf
 
     node_name_num_map = {}
     count = 0
 
-    for node in tree.traverse('postorder'):
+    for node in ete_tree.traverse('postorder'):
         
         if node.is_root():
             continue
         # leaf
         elif node.is_leaf():
-            cn_profiles_2d = np.array([cn_profiles.loc[int(node.name)] == cn_state for cn_state in range(int(max_cn_state) + 1)])
+            cn_profiles_2d = np.array([node.cn_profile == cn_state for cn_state in range(int(max_cn_state) + 1)])
             DP[count, cn_profiles_2d] = 0
             node_name_num_map[node.name] = count
             count += 1
@@ -62,10 +73,10 @@ def get_sankoff_min_parsimony_tree(tree, cn_profiles, amplicons_of_interest=None
             count += 1
 
     # find the minimum value for each amplicon
-    # min_parsimony_score = DP[node_name_num_map[tree.get_tree_root().name]].min(axis=0)
+    # min_parsimony_score = DP[node_name_num_map[ete_tree.get_tree_root().name]].min(axis=0)
 
     # backtrack to find the copy number states at internal nodes
-    for node in tree.traverse('preorder'):
+    for node in ete_tree.traverse('preorder'):
         if node.is_root():
             if not "cn_profile" in node.features:
                 cn_profile = pd.Series(
@@ -74,12 +85,12 @@ def get_sankoff_min_parsimony_tree(tree, cn_profiles, amplicons_of_interest=None
                 node.add_features(
                     cn_profile = cn_profile
                 )
-            elif (node.cn_profile == 2).all():
+            elif not (node.cn_profile == 2).all():
                 raise ValueError("Root node must be diploid!")
         elif node.is_leaf():
-            cn_profile = cn_profiles.loc[int(node.name)]
+            cn_profile = node.cn_profile
             parent = node.up
-            distance = (abs(cn_profiles.loc[int(node.name), amplicons_of_interest] - parent.cn_profile[amplicons_of_interest])).sum()
+            distance = (abs(node.cn_profile[amplicons_of_interest] - parent.cn_profile[amplicons_of_interest])).sum()
             node.dist = distance
         else:
             cn_profile = pd.Series(

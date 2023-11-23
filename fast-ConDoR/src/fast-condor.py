@@ -59,7 +59,7 @@ def main(args):
     cn_profiles = None
 
     if args.cnp is not None:
-        cn_profiles = pd.read_csv(args.cnp, index_col=None)
+        cn_profiles = pd.read_csv(args.cnp, index_col=0)
 
     snp_list = []
     if args.s is not None:

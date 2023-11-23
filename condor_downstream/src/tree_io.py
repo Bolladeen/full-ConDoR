@@ -46,6 +46,7 @@ def nx_to_ete_tree(nx_tree):
             events_cache = []
     return ete_tree
 
+# @HZ deprecated
 def add_info_to_ete_tree(
         ete_tree, 
         cn_profiles, 
@@ -68,17 +69,17 @@ def add_info_to_ete_tree(
     for leaf in ete_tree.iter_leaves():
 
         leaf_cn_profile = cn_profiles.loc[int(leaf.name), :]
-        leaf_size = cn_clone_sizes[int(leaf.name)]
-        # leaf_size_for_plotting = cn_clone_sizes_for_plotting[int(leaf.name)]
+        clone_size = cn_clone_sizes[int(leaf.name)]
+        # clone_size_for_plotting = cn_clone_sizes_for_plotting[int(leaf.name)]
         leaf_color = cn_clone_palette[leaf.name]
         leaf.add_features(
             cn_profile = leaf_cn_profile,
-            leaf_size = leaf_size,
-            # leaf_size_for_plotting = leaf_size_for_plotting,
+            clone_size = clone_size,
+            # clone_size_for_plotting = clone_size_for_plotting,
             leaf_color = leaf_color,
         )
         logger.info(f"added cn_clone info to leaf {leaf.name}")
-        logger.debug(f"leaf {leaf.name} -- size: {leaf_size}, color: {leaf_color}")
+        logger.debug(f"leaf {leaf.name} -- size: {clone_size}, color: {leaf_color}")
 
     for node in ete_tree.traverse('preorder'):
         # add edge events
@@ -137,3 +138,4 @@ def add_info_to_ete_tree(
             )
             logger.info(f"added events info to node {node.name}")
             logger.debug(f"node {node.name} -- {len(germline_snp_events)} germline SNP events; {len(somatic_snv_events)} somatic SNV events")
+
