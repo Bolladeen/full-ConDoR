@@ -42,7 +42,6 @@ def get_filtered_mutations(manually_annotated_snvs):
 
     return total_mutations, germline_mutations, somatic_mutations
 
-
 def generate_condor_input(sample_name, cn_assignment_df, args, bin_thres=0.5):
     merged_cn_assignment_df = cn_assignment_df.copy()
     print(merged_cn_assignment_df)
@@ -101,18 +100,20 @@ def generate_condor_input(sample_name, cn_assignment_df, args, bin_thres=0.5):
         x[2], x[3] = x[3], x[2]
         return "_".join(x)
 
-    common_mutations = list(map(mut_replace, common_mutations))
-    germline_mutations_list = list(map(mut_replace, germline_mutations))
-    somatic_mutations_list = list(map(mut_replace, somatic_mutations))
-    print(len(common_mutations))
+    # common_mutations = list(map(mut_replace, common_mutations))
+    # germline_mutations_list = list(map(mut_replace, germline_mutations))
+    germline_mutations_list = list(germline_mutations)
+    # somatic_mutations_list = list(map(mut_replace, somatic_mutations))
+    somatic_mutations_list = list(somatic_mutations)
+    # print(len(common_mutations))
 
     df_total = pd.concat(df_total_samples, ignore_index=True)
     df_total = df_total.rename(columns={"DP": "cell_barcode"})
-    df_total = df_total.rename(
-        columns={
-            c: mut_replace(c) for c in df_total.columns if c not in ["cell_barcode"]
-        }
-    )
+    # df_total = df_total.rename(
+    #     columns={
+    #         c: mut_replace(c) for c in df_total.columns if c not in ["cell_barcode"]
+    #     }
+    # )
 
     df_total = df_total[["cell_barcode"] + common_mutations]
     df_total = df_total.set_index("cell_barcode")
@@ -120,9 +121,9 @@ def generate_condor_input(sample_name, cn_assignment_df, args, bin_thres=0.5):
 
     df_alt = pd.concat(df_alt_samples)
     df_alt = df_alt.rename(columns={"alt_read_count": "cell_barcode"})
-    df_alt = df_alt.rename(
-        columns={c: mut_replace(c) for c in df_alt.columns if c not in ["cell_barcode"]}
-    )
+    # df_alt = df_alt.rename(
+    #     columns={c: mut_replace(c) for c in df_alt.columns if c not in ["cell_barcode"]}
+    # )
 
     df_alt = df_alt[["cell_barcode"] + common_mutations]
     df_alt = df_alt.set_index("cell_barcode")

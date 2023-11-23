@@ -47,17 +47,14 @@ def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character
     gs.ax_heatmap.axes.set_yticklabels([])
     gs.ax_heatmap.axes.set_xticklabels(gs.ax_heatmap.axes.get_xticklabels(), size = 10)
 
-    snv_annotations = {mut_replace(k): v for k, v in snv_annotations.items()}
+    # snv_annotations = {mut_replace(k): v for k, v in snv_annotations.items()}
     
     for tick_label in gs.ax_heatmap.axes.get_xticklabels():
-        if snv_annotations[tick_label.get_text()] in germline_mutations:
-            tick_text = tick_label.get_text()
+        if tick_label.get_text() in germline_mutations:
             tick_label.set_color('green')
-        elif snv_annotations[tick_label.get_text()] in somatic_mutations:
-            tick_text = tick_label.get_text()
+        elif tick_label.get_text() in somatic_mutations:
             tick_label.set_color('red')
         else: 
-            tick_text = tick_label.get_text()
             tick_label.set_color('black')
 
     gs.ax_col_dendrogram.set_visible(False)
@@ -65,9 +62,7 @@ def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character
     gs.ax_heatmap.tick_params(right=False)
     
     return gs
-    
-
-    
+       
 def generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_total_readcounts, sorted_mutation_list, snv_annotations, germline_mutations, somatic_mutations): 
 
     clustering = df_character_matrix['cluster_id']
@@ -106,20 +101,18 @@ def generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_
         x = x.replace(":", "_").replace("/" , "_").split('_')
         x[2], x[3] = x[3], x[2]
         return "_".join(x)
-    snv_annotations = {mut_replace(k): v for k, v in snv_annotations.items()}
+    # snv_annotations = {mut_replace(k): v for k, v in snv_annotations.items()}
     print("==============")
     print(snv_annotations)
     print("==============")
     
     for tick_label in gs.ax_heatmap.axes.get_xticklabels():
         print(tick_label.get_text())
-        if snv_annotations[tick_label.get_text()] in germline_mutations:
-            tick_text = tick_label.get_text()
+        if tick_label.get_text() in germline_mutations:
             tick_label.set_color('green')
-        elif snv_annotations[tick_label.get_text()] in somatic_mutations:
+        elif tick_label.get_text() in somatic_mutations:
             tick_label.set_color('red')
         else:
-            tick_text = tick_label.get_text()
             tick_label.set_color('black')
 
     gs.ax_col_dendrogram.set_visible(False)
@@ -147,8 +140,9 @@ def main(args):
     
     mut_data = []
     for mutation in selected_mutation_list:
-        mut_chr = mutation.split('_')[0].lstrip('chr')
-        mut_pos = int(mutation.split('_')[1])
+        mut_chr = mutation.split(':')[0].lstrip('chr')
+        print(mutation)
+        mut_pos = int(mutation.split(':')[1]) # <<<<<<<<<<
         mut_gene = df_amplicon[((df_amplicon['chrom'] == mut_chr) &
                                 (df_amplicon['min_pos'] <= mut_pos) &
                                 (df_amplicon['max_pos'] >= mut_pos-1))]['gene'].values[0]
@@ -168,21 +162,21 @@ def main(args):
 
     germline_mutations_fp = args.g
     germline_mutations = []
-    
     with open(germline_mutations_fp, "r") as file:
         for line in file:
             # Remove leading/trailing whitespace and newline characters
             mut = line.strip()
             germline_mutations.append(mut)
-    
+    germline_mutations = [snv_annotations[mut] for mut in germline_mutations]
+
     somatic_mutations_fp = args.m
     somatic_mutations = []
-    
     with open(somatic_mutations_fp, "r") as file:
         for line in file:
             # Remove leading/trailing whitespace and newline characters
             mut = line.strip()
             somatic_mutations.append(mut)
+    somatic_mutations = [snv_annotations[mut] for mut in somatic_mutations]
 
     gs_sol = generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character_matrix, df_multistate, sorted_mutation_list, snv_annotations, germline_mutations, somatic_mutations)
     gs_vaf = generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_total_readcounts, sorted_mutation_list, snv_annotations, germline_mutations, somatic_mutations)

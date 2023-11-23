@@ -404,7 +404,7 @@ class solveFastConstrainedDollo():
 
                 for node in self.solT_cell.nodes():
                     if type(node) == int:
-                        self.solT_cell.nodes[node]['cn_profile'] = self.cnp.loc[node].tolist()
+                        self.solT_cell.nodes[node]['cn_profile'] = self.cnp.loc[node] # @HZ this is a Pandas Series with column names as amplicons
 
                 def find_subchains(graph, start_node, current_chain, chains):
                     current_chain.append(start_node)
@@ -557,7 +557,7 @@ class solveFastConstrainedDollo():
 
 
 
-            directory = './results/pickle_files/'
+            directory = './condor_outputs/pickle_files/'
             if not os.path.exists(directory):
                 os.makedirs(directory)
             with open(f'{directory}{self.sample}_self.solT_cell', 'wb') as file:
