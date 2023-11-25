@@ -310,6 +310,8 @@ class solveFastConstrainedDollo():
             pruned_events = [x for x in df_solb_binary if x not in [f'{y}_1' for y in snp_list]]
             self.solT_mut, self.solT_cell = solveFastConstrainedDollo.generate_perfect_phylogeny(df_solb_binary[pruned_events])
             
+            for node in self.solT_mut.nodes():
+                print(node)
             if self.scr_flag == True:
                 valid_mutations = set()
                 for edge in self.solT_cell.edges():
@@ -322,18 +324,27 @@ class solveFastConstrainedDollo():
                 
 
                 best_df_gain = self.df_gain
+                helper_dict = {}
+                for cluster_idx in range(nclusters):
+                    gained_mutations = [mut for mut in self.mutation_list if self.df_gain.loc[cluster_idx][mut] == 1]
+
+                    helper_dict[cluster_idx] = gained_mutations
+
+                for k, v in helper_dict.items():
+                    print(k)
+                    print(v)
+
                 for cluster_idx in range(nclusters):
                     gained_mutations = [mut for mut in self.mutation_list if self.df_gain.loc[cluster_idx][mut] == 1]
                     cluster = self.df_clustering.index[self.df_clustering == cluster_idx].to_list()
-
                     if self.subclonal_mutations is not None:
+                        gained_mutations = []
                         if cluster_idx in self.subclonal_mutations.keys():
                             gained_mutations.extend(self.subclonal_mutations[cluster_idx])
-
+                    
                     #else:
                         #if cluster_idx == 1:
-                            #gained_mutations.extend(["chr3_30715617_T_G", "chr3_30715619_G_C", "chr3_30713659_C_CGCCAAGG", "chr11_71943807_T_A", "chr3_178936082_C_G", "chr15_67482870_T_C"])
-
+                            #gained_mutations.extend(["chr3:30715617:G/T", "chr3:30715619:C/G", "chr3:30713659:CGCCAAGG/C", "chr11:71943807:A/T", "chr3:178936082:G/C", "chr15:67482870:C/T"])
                     for m in [item for item in gained_mutations if item in result_columns]:
                         for n in [n for n in self.solT_cell.nodes() if len(str(n)) > 4 and n[:-2] == m]:
                             if self.solT_cell.has_node(n):
@@ -557,7 +568,7 @@ class solveFastConstrainedDollo():
 
 
 
-            directory = './condor_outputs/pickle_files/'
+            directory = './results/pickle_files/'
             if not os.path.exists(directory):
                 os.makedirs(directory)
             with open(f'{directory}{self.sample}_self.solT_cell', 'wb') as file:
