@@ -310,6 +310,18 @@ class solveFastConstrainedDollo():
             pruned_events = [x for x in df_solb_binary if x not in [f'{y}_1' for y in snp_list]]
             self.solT_mut, self.solT_cell = solveFastConstrainedDollo.generate_perfect_phylogeny(df_solb_binary[pruned_events])
             
+            def find_leaf_nodes_with_int_values(graph, root):
+                def dfs(node):
+                    if isinstance(node, int) or len(node) == 1:
+                        leaf_nodes.append(node)
+                    for neighbor in graph.neighbors(node):
+                        dfs(neighbor)
+
+                leaf_nodes = []
+                dfs(root)
+                return leaf_nodes
+   
+
             for node in self.solT_mut.nodes():
                 print(node)
             if self.scr_flag == True:
@@ -321,8 +333,7 @@ class solveFastConstrainedDollo():
                 result_columns = [i[:-2] for i in valid_mutations if len(str(i)) > 4]
                 subclonal_snvs = {}
                 cell_attachments = {}
-                
-
+             
                 best_df_gain = self.df_gain
                 helper_dict = {}
                 for cluster_idx in range(nclusters):
@@ -333,12 +344,13 @@ class solveFastConstrainedDollo():
                 for k, v in helper_dict.items():
                     print(k)
                     print(v)
-
+                
+                tree_mutations = {m[:-2] : find_leaf_nodes_with_int_values(self.solT_cell, m) for m in self.solT_mut.nodes() if len(m) > 4}
                 for cluster_idx in range(nclusters):
-                    gained_mutations = [mut for mut in self.mutation_list if self.df_gain.loc[cluster_idx][mut] == 1]
+                    gained_mutations = [mut for mut in self.mutation_list if self.df_gain.loc[cluster_idx][mut] == 1 and (mut not in tree_mutations.keys() or len(tree_mutations[mut]) < 2) ]
                     cluster = self.df_clustering.index[self.df_clustering == cluster_idx].to_list()
+                    
                     if self.subclonal_mutations is not None:
-                        gained_mutations = []
                         if cluster_idx in self.subclonal_mutations.keys():
                             gained_mutations.extend(self.subclonal_mutations[cluster_idx])
                     
@@ -482,17 +494,7 @@ class solveFastConstrainedDollo():
 
 
             
-            def find_leaf_nodes_with_int_values(graph, root):
-                def dfs(node):
-                    if isinstance(node, int):
-                        leaf_nodes.append(node)
-                    for neighbor in graph.neighbors(node):
-                        dfs(neighbor)
-
-                leaf_nodes = []
-                dfs(root)
-                return leaf_nodes
-            
+                        
             def remove_tree_nodes(g, nodes_to_remove):
                 new_edges = []
                 for m in nodes_to_remove:
@@ -512,6 +514,7 @@ class solveFastConstrainedDollo():
                 chain_root = list(self.solT_cell.predecessors(chain[0]))[0]
                 chain_tail = list(self.solT_cell.successors(chain[-1]))
                 subclusters = find_leaf_nodes_with_int_values(self.solT_cell, chain[0])
+                print('subclusters', subclusters)
                 self.solT_cell, new_edges = remove_tree_nodes(self.solT_cell, chain)
                 cluster = []
                 for cidx in subclusters:
