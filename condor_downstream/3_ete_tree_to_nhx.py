@@ -6,15 +6,17 @@ from pathlib import Path
 
 # %% Import tree
 
-refined_tree_dir = Path("/Users/haochen/Desktop/Tapestri_analysis/Tapestri_data_batch2/falcon+condor/HZ_ete_trees_refined")
+refined_tree_dir = Path("/juno/work/iacobuzc/haochen/Tapestri_batch2/analysis/condor_pipeline/HZ_ete_trees_refined_subclonal_snvs")
+output_dir = Path("/juno/work/iacobuzc/haochen/Tapestri_batch2/analysis/condor_downstream")
+output_dir = output_dir / "NHX_trees"
+output_dir.mkdir(exist_ok=True, parents=True)
+patient_names = set([str(l).rsplit('/',1)[1].split("_HZ_ETE")[0] for l in refined_tree_dir.glob('**/*.pkl')])
 
-sample_names = [str(l).rsplit('/',1)[1].split("_HZ_ETE")[0] for l in refined_tree_dir.glob('*.pkl')]
+for patient_i in patient_names:
+    # if not patient_i == "M12":
+    #     continue
 
-for sample_i in sample_names:
-    if not sample_i == "M12":
-        continue
-
-    tree_f = f"/Users/haochen/Desktop/Tapestri_analysis/Tapestri_data_batch2/falcon+condor/HZ_ete_trees_refined/{sample_i}_HZ_ETE_tree.pkl"
+    tree_f = refined_tree_dir / patient_i / f"{patient_i}_HZ_ETE_tree.pkl"
     ete_tree = pkl.load(open(tree_f, "rb"))
 
 
@@ -37,9 +39,9 @@ for sample_i in sample_names:
             somatic_snv_lohs = somatic_snv_lohs,
         )
     # # %% Write NHX for ggtree in R
-    nhx_f = f"/Users/haochen/Desktop/Tapestri_analysis/Tapestri_data_batch2/falcon+condor/HZ_ete_trees_refined/{sample_i}_HZ_ETE_tree.nhx"
+    nhx_f = output_dir / f"{patient_i}_HZ_ETE_tree.nhx"
 
     with open(nhx_f, "w") as f:
-        f.write(ete_tree.write(format=9, features=["dist","leaf_color","leaf_size","name", "n_germline_snp_lohs", "somatic_snv_gains", "somatic_snv_lohs"]))
+        f.write(ete_tree.write(format=9, features=["dist","leaf_color","clone_size","name", "n_germline_snp_lohs", "somatic_snv_gains", "somatic_snv_lohs"]))
 
 # %%

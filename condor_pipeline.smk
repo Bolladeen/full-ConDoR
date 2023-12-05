@@ -4,42 +4,37 @@ import os
 workdir: config["workdir"]
 
 rule all:
-  input:
-		expand("{dataset}/opt_nclones/optimal_cell_assignments.csv", dataset=config["datasets"]),
+	input:
+		# expand("{dataset}/opt_nclones/optimal_cell_assignments.csv", dataset=config["datasets"]),
 		# expand("{dataset}/clonal_refinement/refined_cell_assignments.csv", dataset=config["datasets"]),
 		expand("condor_inputs/{dataset}/character_vaf_matrix.csv", dataset=config["datasets"]),
 		expand("condor_outputs/{dataset}/out_tree.newick", dataset=config["datasets"]),
 		expand("condor_outputs/{dataset}/heatmaps/condor_solution_heatmap.png", dataset=config["datasets"]),
 
 
-rule opt_nclones:
-  params:
-    falcon_solutions=config['falcon_solutions'],
-    nclones=config['nclones'],
-  output:
-    result_clone_assignment='results/{dataset}/opt_nclones/optimal_cell_assignments.csv',
-    result_cn_profile='results/{dataset}/opt_nclones/optimal_clone_profiles.csv',
-  log:
-    std='results/{dataset}/opt_nclones/opt_nclones.log',
-    err='results/{dataset}/opt_nclones/opt_nclones.err.log',
-  shell:
-      """
-      python scripts/select_optimal_nclones.py \
-        -d {wildcards.dataset} \
-        -c {params.nclones} \
-        -i {params.falcon_solutions}{wildcards.dataset}/solutions/  \
-        -a {output.result_clone_assignment}  \
-        -p {output.result_cn_profile} \
-        1> {log.std} 2> {log.err}'
-      """
+# rule opt_nclones:
+#   params:
+#     falcon_solutions=config['falcon_solutions'],
+#     nclones=config['nclones'],
+#   output:
+#     result_clone_assignment='results/{dataset}/opt_nclones/optimal_cell_assignments.csv',
+#     result_cn_profile='results/{dataset}/opt_nclones/optimal_clone_profiles.csv',
+#   log:
+#     std='results/{dataset}/opt_nclones/opt_nclones.log',
+#     err='results/{dataset}/opt_nclones/opt_nclones.err.log',
+#   shell:
+#       """
+#       python scripts/select_optimal_nclones.py \
+#         -d {wildcards.dataset} \
+#         -c {params.nclones} \
+#         -i {params.falcon_solutions}{wildcards.dataset}/solutions/  \
+#         -a {output.result_clone_assignment}  \
+#         -p {output.result_cn_profile} \
+#         1> {log.std} 2> {log.err}'
+#       """
 rule condor_inputs:
 	input:
-<<<<<<< HEAD
-    refined_clone_assignment='results/{dataset}/opt_nclones/optimal_cell_assignments.csv',
-    # refined_clone_assignment = lambda wildcards: f"{config['falcon_solutions']}{wildcards.dataset}.sample_sc_clone_assignment.updated.csv",
-=======
 		refined_clone_assignment = lambda wildcards: Path(config["falcon_solutions"]) / f"{wildcards.dataset}.sample_sc_clone_assignment.updated.csv",
->>>>>>> 94beab31e9c9856bfeabeb960d63bd98b20bd908
 		# "opt_nclones/{dataset}.sample_sc_clone_assignment.updated.csv",
 		annotated_mutations = lambda wildcards: Path(config["annotated_mutations"]) / f"{wildcards.dataset}-patient-all_vars-voi.hz_curated.txt",
 	output:
@@ -85,14 +80,10 @@ rule fast_condor:
 		total_readcounts="condor_inputs/{dataset}/total_readcounts.csv",
 		germline_mutations="condor_inputs/{dataset}/germline_mutations.txt",
 		somatic_mutations="condor_inputs/{dataset}/somatic_mutations.txt",
-<<<<<<< HEAD
-    cn_profiles='results/{dataset}/opt_nclones/optimal_clone_profiles.csv',
-=======
 		# refined_clone_assignment = lambda wildcards: Path(config["falcon_solutions"]) / f"{wildcards.dataset}.sample_sc_clone_assignment.updated.csv",
 		refined_clone_profiles = lambda wildcards: Path(config["falcon_solutions"]) / f"{wildcards.dataset}.unique_cn_clone_profiles.csv",
 	output:
 		newick_tree_file = "condor_outputs/{dataset}/out_tree.newick",
->>>>>>> 94beab31e9c9856bfeabeb960d63bd98b20bd908
 	params:
 		fast_condor_script = config["fast_condor_script"],
 		amplicon_coordinates_file = config["amplicon_coordinates_file"],
@@ -120,14 +111,9 @@ rule fast_condor:
 			-m {params.amplicon_coordinates_file} \
 			-c {params.hdf5_directory} \
 			-d {wildcards.dataset} \
-<<<<<<< HEAD
-      --scr \
-      --cnp {input.cn_profiles} \
-=======
 			--scr \
 			--cnp {input.refined_clone_profiles} \
 			--subclonal_mutations {params.subclonal_mutations} \
->>>>>>> 94beab31e9c9856bfeabeb960d63bd98b20bd908
 			1> {log.std} 2> {log.err}
 		"""
 

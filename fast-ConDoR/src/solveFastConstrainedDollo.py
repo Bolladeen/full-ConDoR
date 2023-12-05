@@ -571,7 +571,7 @@ class solveFastConstrainedDollo():
 
 
 
-            directory = './results/pickle_files/'
+            directory = './condor_outputs/pickle_files/'
             if not os.path.exists(directory):
                 os.makedirs(directory)
             with open(f'{directory}{self.sample}_self.solT_cell', 'wb') as file:

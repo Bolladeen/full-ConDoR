@@ -1,0 +1,44 @@
+workdir: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline
+
+datasets:
+  - M04
+  - M07
+  - M11
+  - M12
+  - M13
+  - RA15_06
+  - RA15_16
+  - RA16_08
+  - RA16_29
+  - RA17_13
+  - RA17_22
+  - RA19_02
+  - RA19_10
+  - RA19_21
+  - RA20_05
+  - RA21_17
+  - TP6
+  - TP12
+
+# ===== centralized data directory =====
+raw_data_directory: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/SNV_FILLOUT_results
+annotated_mutations: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/manual_annotated_snv_lists
+readcount_directory: /home/zhangh5/work/Tapestri_batch2/batch2_data_compiled/raw_read_counts
+falcon_solutions: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/0-opt_nclones
+subclonal_mutations: /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/manual_subclonal_snvs
+
+# ===== scripts and params =====
+amplicon_coordinates_file: /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/references/amplicon_panel.csv
+condor_pipeline_scripts_dir: /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/scripts
+fast_condor_script: /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/fast-ConDoR/src/fast-condor.py
+
+# nclones:
+#     - 2
+#     - 3
+#     - 4
+#     - 5
+#     - 6
+#     - 7
+#     - 8
+#     - 9
+#     - 10
