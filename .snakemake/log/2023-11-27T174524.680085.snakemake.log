@@ -1,2 +1,0 @@
-SyntaxError in file /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/condor_pipeline.smk, line 10:
-Unexpected keyword expand in rule definition (condor_pipeline.smk, line 10)

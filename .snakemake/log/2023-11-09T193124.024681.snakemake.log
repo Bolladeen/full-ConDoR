@@ -1,7 +1,0 @@
-Building DAG of jobs...
-MissingInputException in rule condor_inputs in file /home/zhangh5/work/Tapestri_batch2/analysis/full-ConDoR/condor_pipeline.smk, line 13:
-Missing input files for rule condor_inputs:
-    output: condor_inputs/M04/character_vaf_matrix.csv, condor_inputs/M04/character_bin_matrix.csv, condor_inputs/M04/alt_readcounts.csv, condor_inputs/M04/total_readcounts.csv, condor_inputs/M04/germline_mutations.txt, condor_inputs/M04/somatic_mutations.txt
-    wildcards: dataset=M04
-    affected files:
-        /home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/opt_nclones/M04.sample_sc_clone_assignment.updated.csv
