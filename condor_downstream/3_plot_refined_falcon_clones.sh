@@ -1,10 +1,10 @@
 mamba activate condor
 
-SAMPLE_NAMES=(TP6)
+SAMPLE_NAMES=$(ls /juno/work/iacobuzc/haochen/Tapestri_batch2/analysis/condor_downstream/HZ_ete_trees_refined_subclonal_snvs)
 
 TAP_CN_CALLING_DIR=/home/zhangh5/work/Tapestri_project/cn-calling
 PLOT_SCRIPT=${TAP_CN_CALLING_DIR}/scripts/PLOT-unique_cn_profiles.py \
-OUTPUT_DIR=/home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/HZ_ete_trees_refined_subclonal_snvs
+OUTPUT_DIR=/home/zhangh5/work/Tapestri_batch2/analysis/condor_downstream/HZ_ete_trees_refined_subclonal_snvs
 for patient_i in ${SAMPLE_NAMES[@]}; do
     echo "Processing ----- ${patient_i}"
 
