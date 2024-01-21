@@ -104,5 +104,9 @@ def get_sankoff_min_parsimony_tree(ete_tree, amplicons_of_interest=None):
             distance = (abs(cn_profile[amplicons_of_interest] - parent.cn_profile[amplicons_of_interest])).sum()
             node.dist = distance
 
-
+def update_edge_dist(ete_tree, snv_norm=3, cnv_norm=200):
+    """
+    Update edge distances considering both SNV events and CNV events
+    """
+    
             
