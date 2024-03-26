@@ -1,6 +1,6 @@
 mamba create -n condor -c conda-forge ete3=3.1.3=pyhd8ed1ab_0 python=3.11
 mamba activate condor
-mamba install -c conda-forge bioconda numpy pandas networkx snakemake biopython seaborn openpyxl ipykernel
+mamba install -c conda-forge -c bioconda numpy pandas networkx "snakemake<8" biopython seaborn openpyxl ipykernel
 mamba install -c plotly plotly
 pip install -U kaleido # for plotly plotting
 conda config --add channels https://conda.anaconda.org/gurobi

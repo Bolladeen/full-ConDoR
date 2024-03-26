@@ -27,5 +27,5 @@ dependencies:
   # - python-kaleido
   # --- pip ---
   - pip:
-    - -e /home/zhangh5/work/Tapestri_project/TapVarCallSmk/resources/mosaic
-    - -e /home/zhangh5/work/Tapestri_project/TapVarCallSmk/resources/tea
+    - -e /data/iacobuzc/haochen/Tapestri_project/TapVarCallSmk/resources/mosaic
+    - -e /data/iacobuzc/haochen/Tapestri_project/TapVarCallSmk/resources/tea

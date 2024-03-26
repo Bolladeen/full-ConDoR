@@ -32,11 +32,20 @@ rule all:
 #         -p {output.result_cn_profile} \
 #         1> {log.std} 2> {log.err}'
 #       """
+
+def __get_falcon_solution_cell_assignment(wildcards):
+	return list(Path(config["falcon_solutions"]).glob(f"{wildcards.dataset}*assignment*.csv"))[0]
+def __get_falcon_solution_cn_profiles(wildcards):
+	return list(Path(config["falcon_solutions"]).glob(f"{wildcards.dataset}*clone_profile*.csv"))[0]
+def __get_annotated_mutations(wildcards):
+	return list(Path(config["annotated_mutations"]).glob(f"{wildcards.dataset}*voi.hz_curated.txt"))[0]
+
+
 rule condor_inputs:
 	input:
-		refined_clone_assignment = lambda wildcards: Path(config["falcon_solutions"]) / f"{wildcards.dataset}.sample_sc_clone_assignment.updated.csv",
+		refined_clone_assignment = __get_falcon_solution_cell_assignment,
 		# "opt_nclones/{dataset}.sample_sc_clone_assignment.updated.csv",
-		annotated_mutations = lambda wildcards: Path(config["annotated_mutations"]) / f"{wildcards.dataset}-patient-all_vars-voi.hz_curated.txt",
+		annotated_mutations = __get_annotated_mutations,
 	output:
 		character_vaf="condor_inputs/{dataset}/character_vaf_matrix.csv",
 		character_mat="condor_inputs/{dataset}/character_bin_matrix.csv",
@@ -81,7 +90,7 @@ rule fast_condor:
 		germline_mutations="condor_inputs/{dataset}/germline_mutations.txt",
 		somatic_mutations="condor_inputs/{dataset}/somatic_mutations.txt",
 		# refined_clone_assignment = lambda wildcards: Path(config["falcon_solutions"]) / f"{wildcards.dataset}.sample_sc_clone_assignment.updated.csv",
-		refined_clone_profiles = lambda wildcards: Path(config["falcon_solutions"]) / f"{wildcards.dataset}.unique_cn_clone_profiles.csv",
+		refined_clone_profiles = __get_falcon_solution_cn_profiles,
 	output:
 		newick_tree_file = "condor_outputs/{dataset}/out_tree.newick",
 	params:
@@ -126,7 +135,7 @@ rule generate_heatmaps:
 		character_mat="condor_inputs/{dataset}/character_bin_matrix.csv",
 		germline_mutations="condor_inputs/{dataset}/germline_mutations.txt",
 		somatic_mutations="condor_inputs/{dataset}/somatic_mutations.txt",
-		annotated_mutations = lambda wildcards: Path(config["annotated_mutations"]) / f"{wildcards.dataset}-patient-all_vars-voi.hz_curated.txt",
+		annotated_mutations = __get_annotated_mutations,
 	output:
 		vaf_heatmap="condor_outputs/{dataset}/heatmaps/vaf_heatmap.png",
 		solution_heatmap="condor_outputs/{dataset}/heatmaps/condor_solution_heatmap.png",
