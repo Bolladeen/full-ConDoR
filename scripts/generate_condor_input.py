@@ -23,7 +23,7 @@ def get_filtered_mutations(manually_annotated_snvs):
             (snvs["annotation"] != "likely_artifact")
             & (snvs["annotation"] != "germline_HOM")
         ]["condensed_format"].to_list()
-        somatic_mutations = snvs[snvs["annotation"] == "bulk_somatic"][
+        somatic_mutations = snvs[snvs["annotation"].str.lower().str.contains("somatic")][
             "condensed_format"
         ].to_list()
     else:

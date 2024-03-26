@@ -124,7 +124,6 @@ tree_files <- list.files(NHX_tree_dir, pattern = "*.nhx", full.names = TRUE)
 
 # create a list to store the plots
 tree_objs <- list()
-tree_plots <- list()
 
 # plot each patient's tree, store in the list
 for (tree_f in tree_files) {
@@ -136,18 +135,6 @@ for (tree_f in tree_files) {
 
   tree <- process_nhx_tree(tree_f)
   tree_objs[[sample_name]] <- tree
-  # tree_plots[[tree_f]] <- ggtree(tree, layout = "rectangular", branch.length = "dist") +
-  #   geom_tippoint() + 
-  #   geom_nodepoint() + 
-  #   # geom_tiplab(size=5, color="black", hjust = -2) + 
-  #   # add in leaf size: if not NA, size = clone_size; if NA, size = 5 (default)
-  #   geom_point(aes(size = clone_size, color=isTip)) +
-  #   theme_tree2() + 
-  #   geom_label_repel(aes(x=branch, label=somatic_snv_gains), vjust=-0.5, color="steelblue", size=3, label.size=NA, fill=NA) + 
-  #   geom_label_repel(aes(x=branch, label=somatic_snv_lohs), vjust=0.5, color="purple", size=3, label.size=NA, fill=NA) + 
-  #   geom_label_repel(aes(x=branch, label=n_germline_snp_lohs_geom), vjust=0, color="#b51111", size=5, label.size=NA, fill=NA)
-}
-
 # 
 class(tree_objs) = "multiPhylo"
 # add yscale which is the number of clones
@@ -185,13 +172,6 @@ ggsave(
   all_trees_plot, 
   width = 20, height = 15, dpi=400)
 
-
-# use Patchwork to combine all the plots
-combined_plots <- wrap_plots(tree_plots, ncol = 2)
-
-# Display the combined plot
-combined_plots
-
-
+# ================= save a table 
 
 

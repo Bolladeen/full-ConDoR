@@ -50,7 +50,8 @@ rule condor_inputs:
 		std="results/condor_inputs/{dataset}/condor_inputs.log",
 		err="results/condor_inputs/{dataset}/condor_inputs.err.log",
 	conda: 
-		"envs/mosaic-custom.yaml",
+		# "envs/mosaic-custom.yaml",
+		"mosaic"
 	threads: lambda wildcards, attempt: attempt * 4
 	resources:
 		mem_mb = 8000,
