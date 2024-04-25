@@ -1,10 +1,15 @@
-mamba create -n condor -c conda-forge ete3=3.1.3=pyhd8ed1ab_0 python=3.11
+mamba create \
+	-n condor \
+	-c conda-forge \
+	ete3=3.1.3=pyhd8ed1ab_0 python=3.11
 mamba activate condor
-mamba install -c conda-forge -c bioconda numpy pandas networkx "snakemake<8" biopython seaborn openpyxl ipykernel
+mamba install \
+	-c conda-forge -c bioconda \
+	numpy pandas networkx "snakemake<8" biopython seaborn openpyxl ipykernel
 mamba install -c plotly plotly
 pip install -U kaleido # for plotly plotting
 conda config --add channels https://conda.anaconda.org/gurobi
-mamba install gurobi
+pip install gurobipy==10.0.3 # version 11 is not compatible with condor
 
 # obtain license and put it to ~/gurobi.lic or set up $GRB_LICENSE_FILE env variable
 

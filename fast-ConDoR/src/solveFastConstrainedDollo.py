@@ -293,7 +293,6 @@ class solveFastConstrainedDollo():
         
         model.optimize()
         if model.status == gp.GRB.OPTIMAL:
-
             solg = np.reshape(model.getAttr('x', g).values(), (nclusters, nmutations))
             sola = np.reshape(model.getAttr('x', a).values(), (nclusters, nmutations))
             solc = np.reshape(model.getAttr('x', c).values(), (nclusters, nmutations, k))

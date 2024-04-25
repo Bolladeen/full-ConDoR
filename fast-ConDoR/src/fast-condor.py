@@ -15,7 +15,7 @@ import math
 import numpy as np
 from solveFastConstrainedDollo import solveFastConstrainedDollo
 import yaml
-from IPython import embed
+# from IPython import embed
 
 def tree_to_newick(T, root=None):
     if root is None:
@@ -170,7 +170,7 @@ def main(args):
         #         if file.endswith('.txt'):
         #             cravat_f = local_directory + dataset + '/' + file
         #             cravat_df = pd.read_csv(cravat_f, sep='\t', index_col=0, header=[0,1])
-    embed()
+    # embed() # @HZ 2024-03-25 Gurobi version 11 is not compatible with the current version of the code
     solver = solveFastConstrainedDollo(df_character_matrix, df_total_readcounts=df_total_readcounts,
                                        df_variant_readcounts=df_variant_readcounts,
                                        k=k, fp=fp, fn=fn,

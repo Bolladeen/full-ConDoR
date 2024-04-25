@@ -145,10 +145,11 @@ def generate_condor_input(sample_name, cn_assignment_df, args, bin_thres=0.5):
         "cell_barcode"
     ].apply(rename_barcode)
     print(merged_cn_assignment_df["clone_id"].value_counts())
-    print(
-        set([c.split("-")[2] for c in df_character_mat.index.tolist()]),
-        merged_cn_assignment_df.shape,
-    )
+
+    # print(
+    #     set([c.split("-")[2] for c in df_character_mat.index.tolist()]),
+    #     merged_cn_assignment_df.shape,
+    # )
 
     df_character_mat = pd.merge(
         df_character_mat,

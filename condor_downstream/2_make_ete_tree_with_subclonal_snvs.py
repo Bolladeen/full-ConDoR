@@ -13,7 +13,7 @@ print(f"cwd: {os.getcwd()}")
 # - https://github.com/etetoolkit/ete/issues/101
 # - https://github.com/ContinuumIO/anaconda-issues/issues/1806
 os.environ["QT_QPA_PLATFORM"] = "offscreen"
-os.environ["XDG_RUNTIME_DIR"] = "/juno/work/iacobuzc/tmp"
+os.environ["XDG_RUNTIME_DIR"] = "/lilac/data/iacobuzc/tmp"
 import plotly.express as px
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -46,14 +46,14 @@ sample_name_map = pd.read_excel('../references/Tapestri_batch2_samples_MASTER.xl
 # %% Read in data
 pickle_dir = Path("../../condor-pipeline/condor_outputs/pickle_files")
 manual_snv_dir = Path(
-    "../../batch2_data_compiled/manual_annotated_snv_lists"
+    "../../../batch2_data_BRCA_compiled/manual_annotated_snv_lists"
 )
 output_dir = Path("../../condor_downstream/HZ_ete_trees_refined_subclonal_snvs")
 output_dir.mkdir(exist_ok=True, parents=True)
 
 patient_names = [str(f.stem).split("_self")[0] for f in pickle_dir.glob("*")]
 # patient_name = "TP6"
-patient_name = "M12"
+patient_name = "BPA-5-RSX"
 # for patient_name in patient_names:
 print(f"Processing {patient_name}")
 f = str(pickle_dir / f"{patient_name}_self.solT_cell")
@@ -65,7 +65,7 @@ som_event_dict = {"0": "MISSING", "1": "GAIN", "2": "LOSS", "3": "LOH"}
 germ_event_dict = {"0": "MISSING", "2": "LOSS", "3": "LOH"}
 
 # %% Read in SNV annotation info
-manual_snv_f = manual_snv_dir / f"{patient_name}-patient-all_vars-voi.hz_curated.txt"
+manual_snv_f = manual_snv_dir / f"{patient_name}-all_vars-voi.hz_curated.txt"
 manual_snv = pd.read_csv(manual_snv_f, sep="\t", index_col=0, comment="#")
 manual_snv["annotation"].fillna("", inplace=True)
 # manual_snv["var_formatted"] = manual_snv.index.str.replace(":", "_").str.replace(
@@ -160,8 +160,8 @@ for node in ete_tree.traverse("preorder"):
                 logger.warning(
                     f">> node {node.name} has < {minimum_clone_size} cells attached"
                 )
+            # (ii) have only one child, which is a gain event
             else:
-                # (ii) have only one child, which is a gain event
                 # if not (node.children[0].name.endswith("_1")):
                 #     logger.warning(f">> node {node.name} is the last internal subclonal event in the chain")
                 # else:
@@ -562,20 +562,20 @@ f2.savefig(fig_file_name, bbox_inches='tight', dpi=300)
 cn_clone_profiles_df.sort_index().to_csv(output_dir / patient_name / f"{patient_name}_final_clone_cn_profiles.csv", index=True)
 sc_clone_assignment_df.to_csv(output_dir / patient_name / f"{patient_name}_final_sc_clone_assignment.csv", index=False, )
 
-# %% Across all trees, how many internal subclonal cells are here?
+# # %% Across all trees, how many internal subclonal cells are here?
     
-pickle_dir = Path("../../condor-pipeline/condor_outputs/pickle_files")
-for f in pickle_dir.glob("*solT_cell"):
-    print(f"Processing {f.stem}")
-    with open(f, "rb") as f:
-        nx_tree = pickle.load(f)
-        for node in nx_tree.nodes():
-            node_attributes = nx_tree.nodes()[node]
-            if "cell_attachment" in node_attributes and str(node).endswith("_1"):
-                print(f" {node} -- size {len(node_attributes['cell_attachment'])}")
+# pickle_dir = Path("../../condor-pipeline/condor_outputs/pickle_files")
+# for f in pickle_dir.glob("*solT_cell"):
+#     print(f"Processing {f.stem}")
+#     with open(f, "rb") as f:
+#         nx_tree = pickle.load(f)
+#         for node in nx_tree.nodes():
+#             node_attributes = nx_tree.nodes()[node]
+#             if "cell_attachment" in node_attributes and str(node).endswith("_1"):
+#                 print(f" {node} -- size {len(node_attributes['cell_attachment'])}")
 
-# # %% Add internal subclonal SNVs
-# for internal_event_name in internal_subclonal_snvs
+# # # %% Add internal subclonal SNVs
+# # for internal_event_name in internal_subclonal_snvs
 
 
 # %%
