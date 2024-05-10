@@ -196,7 +196,7 @@ if __name__ == "__main__":
     
     # AKHIL additions
     parser.add_argument('-s2', type=str, help='file containing list of SNVs')
-    parser.add_argument('-c', type=str, help='file path to CRAVAT files')
+    # parser.add_argument('-c', type=str, help='file path to CRAVAT files', default=None)
     parser.add_argument('-d', type=str, help='current dataset')
 
     # parser.add_argument('-a', type=float, help='false positive error rate [0.001]', default = 0.001)

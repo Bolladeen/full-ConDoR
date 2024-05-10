@@ -11,38 +11,31 @@ rule all:
 		expand("condor_outputs/{dataset}/out_tree.newick", dataset=config["datasets"]),
 		expand("condor_outputs/{dataset}/heatmaps/condor_solution_heatmap.png", dataset=config["datasets"]),
 
+# sanity check first
+for patient_i in config["datasets"]:
+	if len(list(Path(config["raw_data_directory"]).glob(f"{patient_i}*.h5"))) != 1:
+		raise ValueError(f"Expected 1 h5 file for {patient_i}, found {len(list(Path(config['raw_data_directory']).glob(f'{patient_i}*.h5')))}")
+	if len(list(Path(config["falcon_solutions"]).glob(f"{patient_i}*assignment*.csv"))) != 1:
+		raise ValueError(f"Expected 1 clone-assignment file for {patient_i}, found {len(list(Path(config['falcon_solutions']).glob(f'{patient_i}*assignment*.csv')))}")
+	if len(list(Path(config["falcon_solutions"]).glob(f"{patient_i}*clone_profile*.csv"))) != 1:
+		raise ValueError(f"Expected 1 clone-profile file for {patient_i}, found {len(list(Path(config['falcon_solutions']).glob(f'{patient_i}*clone_profile*.csv')))}")
+	snv_list = list(Path(config["annotated_mutations"]).glob(f"{patient_i}*voi*.txt"))
+	if len(snv_list) != 1:
+		raise ValueError(f"Expected 1 annotated mutation file for {patient_i}, found {len(snv_list)}")
 
-# rule opt_nclones:
-#   params:
-#     falcon_solutions=config['falcon_solutions'],
-#     nclones=config['nclones'],
-#   output:
-#     result_clone_assignment='results/{dataset}/opt_nclones/optimal_cell_assignments.csv',
-#     result_cn_profile='results/{dataset}/opt_nclones/optimal_clone_profiles.csv',
-#   log:
-#     std='results/{dataset}/opt_nclones/opt_nclones.log',
-#     err='results/{dataset}/opt_nclones/opt_nclones.err.log',
-#   shell:
-#       """
-#       python scripts/select_optimal_nclones.py \
-#         -d {wildcards.dataset} \
-#         -c {params.nclones} \
-#         -i {params.falcon_solutions}{wildcards.dataset}/solutions/  \
-#         -a {output.result_clone_assignment}  \
-#         -p {output.result_cn_profile} \
-#         1> {log.std} 2> {log.err}'
-#       """
-
+def __get_input_h5(wildcards):
+	return list(Path(config["raw_data_directory"]).glob(f"{wildcards.dataset}*.h5"))[0]
 def __get_falcon_solution_cell_assignment(wildcards):
 	return list(Path(config["falcon_solutions"]).glob(f"{wildcards.dataset}*assignment*.csv"))[0]
 def __get_falcon_solution_cn_profiles(wildcards):
 	return list(Path(config["falcon_solutions"]).glob(f"{wildcards.dataset}*clone_profile*.csv"))[0]
 def __get_annotated_mutations(wildcards):
-	return list(Path(config["annotated_mutations"]).glob(f"{wildcards.dataset}*voi.hz_curated.txt"))[0]
+    return list(Path(config["annotated_mutations"]).glob(f"{wildcards.dataset}*voi*.txt"))[0]
 
 
 rule condor_inputs:
 	input:
+		h5 = __get_input_h5,
 		refined_clone_assignment = __get_falcon_solution_cell_assignment,
 		# "opt_nclones/{dataset}.sample_sc_clone_assignment.updated.csv",
 		annotated_mutations = __get_annotated_mutations,
@@ -55,7 +48,6 @@ rule condor_inputs:
 		somatic_mutations="condor_inputs/{dataset}/somatic_mutations.txt",
 	params: 
 		condor_input_script = Path(config["condor_pipeline_scripts_dir"]) / "generate_condor_input.py",
-		hdf5_directory=config["raw_data_directory"],
 	log:
 		std="condor_inputs/{dataset}/condor_inputs.log",
 		err="condor_inputs/{dataset}/condor_inputs.err.log",
@@ -70,7 +62,7 @@ rule condor_inputs:
 		"""
 		python {params.condor_input_script} \
 			-d {wildcards.dataset} \
-			-l {params.hdf5_directory} \
+			-h5 {input.h5} \
 			-i {input.refined_clone_assignment} \
 			-snvs {input.annotated_mutations} \
 			-v {output.character_vaf} \
@@ -97,7 +89,6 @@ rule fast_condor:
 		fast_condor_script = config["fast_condor_script"],
 		amplicon_coordinates_file = config["amplicon_coordinates_file"],
 		output_prefix = "condor_outputs/{dataset}/out",
-		hdf5_directory = config["raw_data_directory"],
 		subclonal_mutations = lambda wildcards: f'{config["subclonal_mutations"]}/{wildcards.dataset}.subclonal_mutations.yaml',
 	log:
 		std="condor_outputs/{dataset}/condor_outputs.log",
@@ -118,7 +109,6 @@ rule fast_condor:
 			-s2 {input.somatic_mutations} \
 			-o {params.output_prefix} \
 			-m {params.amplicon_coordinates_file} \
-			-c {params.hdf5_directory} \
 			-d {wildcards.dataset} \
 			--scr \
 			--cnp {input.refined_clone_profiles} \
@@ -141,7 +131,6 @@ rule generate_heatmaps:
 		solution_heatmap="condor_outputs/{dataset}/heatmaps/condor_solution_heatmap.png",
 	params:
 		heatmap_script = Path(config["condor_pipeline_scripts_dir"]) / "generate_heatmaps.py",
-		hdf5_directory=config["raw_data_directory"],
 		condor_solution="condor_outputs/{dataset}/out_B.csv",
 		amplicon_coordinates_file=config["amplicon_coordinates_file"],
 	conda: "condor"

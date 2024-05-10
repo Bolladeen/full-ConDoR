@@ -71,7 +71,7 @@ def find_diploid_clone(ete_tree):
 def merge_clones_into_diploid(
     ete_tree, 
     diploid_clone, 
-    min_leaf_size = 0.001,
+    min_leaf_sc = 5, min_leaf_prop = 0.005,
     rm_clones_with_same_snv_events_as_diploid = False,
     rm_clones_with_no_somatic_snv_events = False,
     ):
@@ -83,6 +83,9 @@ def merge_clones_into_diploid(
     total_cell_num = 0
     for leaf in ete_tree.get_leaves():
         total_cell_num += leaf.clone_size
+    logger.info(f"total cell number: {total_cell_num}")
+    min_leaf_size = max(min_leaf_sc, min_leaf_prop * total_cell_num)
+    logger.info(f"min_leaf_size: {min_leaf_size}")
 
     pre_diploid_events = []
 
@@ -99,16 +102,17 @@ def merge_clones_into_diploid(
         elif leaf is diploid_clone:
             logger.info(f"leaf {leaf.name} is the diploid, skipping")
             continue
-        elif leaf.clone_size < 0.001 * total_cell_num:
-            logger.info(f"leaf {leaf.name} has a clone size of {leaf.clone_size}, smaller than {min_leaf_size*100}% of total cell number, merging into diploid")
+        elif leaf.clone_size < min_leaf_size:
+            logger.info(f"leaf {leaf.name} has a clone size of {leaf.clone_size}, smaller than lower threshold {min_leaf_size}. Merging into diploid")
             logger.warning(f"merging leaf {leaf.name} into diploid_clone {diploid_clone.name}")
             diploid_clone.clone_size += leaf.clone_size
             leaves_to_merge_to_diploid.append(leaf.name)
             # @HZ 2023-09-21: it's problematic to delete leaves here, as the internal node events will always get removed if there's <2 leaves left!
             # leaf.delete()
             continue
-        elif 'somatic_snv_events' in leaf.features and (len(leaf.somatic_snv_events) > 0 or len(leaf.germline_snp_events) > 0):
-            # logger.info(f"leaf {leaf.name} has both somatic SNV and germline SNP events, skipping")
+        elif 'somatic_snv_events' in leaf.features and (len(leaf.somatic_snv_events) > 0 and len(leaf.germline_snp_events) > 0):
+            logger.info(f"leaf {leaf.name} has both somatic SNV and germline SNP events, skipping")
+            logger.info(f"somatic SNV events: {leaf.somatic_snv_events}")
             continue
         else:
             # get all events from the leaf to the root
