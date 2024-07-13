@@ -12,10 +12,8 @@ fi
 
 mamba activate condor
 
-snakemake -s /data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/condor_pipeline.smk \
-    --configfile /data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/config-MSK.yaml \
-    --use-conda \
-    --conda-prefix /data/iacobuzc/haochen/Tapestri_project/TapVarCallSmk/conda \
-    --cores all
+snakemake -s /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/condor_pipeline.smk \
+    --configfile /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/config-MSK.yaml \
+    --cores 4
 
 

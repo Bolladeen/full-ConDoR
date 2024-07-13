@@ -2,7 +2,7 @@ workdir: /data/iacobuzc/haochen/Tapestri_batch2/analysis/condor-pipeline
 datasets:
   - BPA-1
   # - BPA-2-IR
-  - BPA-3
+  # - BPA-3
 
 # ===== centralized data directory =====
 raw_data_directory: /data/iacobuzc/haochen/Tapestri_batch2/batch2_data_BRCA_compiled/SNV_FILLOUT_results
