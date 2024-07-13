@@ -5,6 +5,20 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+"""
+@Akhil Jakatdar
+2023-09
+
+Solves a small parsimony problem using the Sankoff algorithm on a fixed tree topology
+Givens: 
+    n - # of clones
+    k - # of cn_states
+    cn_profiles - dataframe of leaf profiles
+    T - fixed tree phylogeny
+Return:
+    Labels(T) - copy number profile labels of internal nodes
+"""
+
 def get_sankoff_min_parsimony_tree(ete_tree, amplicons_of_interest=None):
     """
     Label internal vertices' copy number states, calculate branch lengths using the Sankoff algorithm

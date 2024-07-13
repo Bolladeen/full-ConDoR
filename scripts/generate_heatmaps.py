@@ -38,9 +38,10 @@ def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character
         return "_".join(x)
     
     df_solution.rename(columns=snv_annotations, inplace=True)
-
+    _fig_h = 10
+    _fig_w = len(sorted_mutation_list) * 0.5 + 2
     gs = sns.clustermap(df_solution, row_cluster=False, col_cluster=False, xticklabels=1,
-                       cmap=cmap, figsize=(20,10), vmin=0, vmax=3, row_colors=row_col_list)
+                       cmap=cmap, figsize=(_fig_w,_fig_h), vmin=0, vmax=3, row_colors=row_col_list)
 
     gs.ax_heatmap.set_ylabel('cells', fontsize=20)
     gs.ax_heatmap.set_xlabel('mutations', fontsize=20)
@@ -89,8 +90,10 @@ def generate_vaf_heatmap(df_vaf, df_character_matrix, df_variant_readcounts, df_
     df_vaf.rename(columns=snv_annotations, inplace=True)
     
     print(df_vaf.columns)
+    _fig_h = 10
+    _fig_w = len(sorted_mutation_list) * 0.5 + 2
     gs = sns.clustermap(df_vaf, row_cluster=False, col_cluster=False, vmin=0, vmax=1, xticklabels=1,
-                               cmap=cmap, figsize=(20,10), row_colors=row_col_list)
+                               cmap=cmap, figsize=(_fig_w,_fig_h), row_colors=row_col_list)
     
     gs.ax_heatmap.set_ylabel('cells', fontsize=20)
     gs.ax_heatmap.set_xlabel('mutations', fontsize=20)

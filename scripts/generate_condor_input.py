@@ -62,38 +62,35 @@ def generate_condor_input(sample_name, cn_assignment_df, args, bin_thres=0.5):
     germline_mutations = []
     somatic_mutations = []
     # embed()
-    for file in (Path(args.l) / sample_name).iterdir():
-        file = file.name
-        if str(file).startswith(sample_name):
-            if str(file).endswith(".h5"):
-                print(f"Found H5: {file}")
-                hdf5_f = Path(args.l) / sample_name / file
-                sample_obj = mio.load(hdf5_f)
-                sample_obj.dna.genotype_variants(
-                    min_dp=8,
-                    min_alt_read=3,
-                    assign_low_conf_genotype=True,
-                )
-                df_alt_snv = sample_obj.dna.get_attribute(
-                    "alt_read_count", constraint="row"
-                )
-                df_total_snv = sample_obj.dna.get_attribute("DP", constraint="row")
 
-                print(df_alt_snv.shape)
-                cmuts, gmuts, smuts = get_filtered_mutations(args.snvs)
-                common_mutations = cmuts
-                germline_mutations = gmuts
-                somatic_mutations = smuts
+    print(f"[INFO] Using H5: {args.h5}")
+    hdf5_f = Path(args.h5)
+    sample_obj = mio.load(hdf5_f)
+    sample_obj.dna.genotype_variants(
+        min_dp=8,
+        min_alt_read=3,
+        assign_low_conf_genotype=True,
+    )
+    df_alt_snv = sample_obj.dna.get_attribute(
+        "alt_read_count", constraint="row"
+    )
+    df_total_snv = sample_obj.dna.get_attribute("DP", constraint="row")
 
-                df_alt_snv.reset_index(inplace=True)
-                df_alt_snv = df_alt_snv.rename(columns={"index": "cell_barcode"})
+    print(df_alt_snv.shape)
+    cmuts, gmuts, smuts = get_filtered_mutations(args.snvs)
+    common_mutations = cmuts
+    germline_mutations = gmuts
+    somatic_mutations = smuts
 
-                df_alt_samples.append(df_alt_snv)
+    df_alt_snv.reset_index(inplace=True)
+    df_alt_snv = df_alt_snv.rename(columns={"index": "cell_barcode"})
 
-                df_total_snv.reset_index(inplace=True)
-                df_total_snv = df_total_snv.rename(columns={"index": "cell_barcode"})
+    df_alt_samples.append(df_alt_snv)
 
-                df_total_samples.append(df_total_snv)
+    df_total_snv.reset_index(inplace=True)
+    df_total_snv = df_total_snv.rename(columns={"index": "cell_barcode"})
+
+    df_total_samples.append(df_total_snv)
 
     def mut_replace(x):
         x = x.replace(":", "_").replace("/", "_").split("_")
@@ -145,10 +142,11 @@ def generate_condor_input(sample_name, cn_assignment_df, args, bin_thres=0.5):
         "cell_barcode"
     ].apply(rename_barcode)
     print(merged_cn_assignment_df["clone_id"].value_counts())
-    print(
-        set([c.split("-")[2] for c in df_character_mat.index.tolist()]),
-        merged_cn_assignment_df.shape,
-    )
+
+    # print(
+    #     set([c.split("-")[2] for c in df_character_mat.index.tolist()]),
+    #     merged_cn_assignment_df.shape,
+    # )
 
     df_character_mat = pd.merge(
         df_character_mat,
@@ -218,7 +216,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-d", type=str, help="dataset name")
-    parser.add_argument("-l", type=str, help="input path for hdf5 and CRAVAT files")
+    parser.add_argument("-h5", type=str, help="input path to h5 file")
     parser.add_argument(
         "-i", type=str, help="input path to refined cell assignments csv file"
     )
