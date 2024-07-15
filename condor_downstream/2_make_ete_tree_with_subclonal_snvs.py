@@ -47,16 +47,26 @@ sample_name_map = pd.read_excel(
     ).set_index('sample')['HZ_official_site_name'].to_dict()
 
 # %% Read in data
-pickle_dir = Path("/lila/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/0_condor_pipeline/condor_outputs/pickle_files")
+# ----- official -----
+pickle_dir = Path("/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/0_condor_pipeline/condor_outputs/pickle_files")
 manual_snv_dir = Path(
     "/lila/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/data_compiled/manual_annotated_snv_lists"
 )
-output_dir = Path("/lila/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/0_condor_pipeline/condor_downstream/ete_trees_refined_subclonal_snvs")
+output_dir = Path("/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/0_condor_pipeline/condor_downstream/ete_trees_refined_subclonal_snvs")
+
+# ---- scratch for BRCA2 -----
+pickle_dir = Path("/data/iacobuzc/haochen/Tapestri_batch2/analysis/condor-pipeline/condor_outputs/pickle_files")
+manual_snv_dir = Path(
+    "/data/iacobuzc/haochen/Tapestri_batch2/batch2_data_BRCA_compiled/manual_annotated_snv_lists"
+)
+output_dir = Path("/data/iacobuzc/haochen/Tapestri_batch2/analysis/condor-pipeline/condor_downstream/ete_trees_refined_subclonal_snvs")
+# ----------------------------
+
 output_dir.mkdir(exist_ok=True, parents=True)
 
 patient_names = [str(f.stem).split("_self")[0] for f in pickle_dir.glob("*")]
 # patient_name = "BPA-5"
-patient_names = ["BPA-2"]
+patient_names = ["BPA-4-RSX"]
 for patient_name in patient_names:
     print(f"Processing {patient_name}")
     f = str(pickle_dir / f"{patient_name}_self.solT_cell")
@@ -466,10 +476,10 @@ for patient_name in patient_names:
     # tree.show(tree_style=ts)
     # tree.render("%%inline", tree_style=ts)
     (output_dir / patient_name).mkdir(exist_ok=True, parents=True)
-    fig_file_name = str(output_dir / patient_name / f"{patient_name}_ETE_tree.refined.png")
+    fig_file_name = str(output_dir / patient_name / f"{patient_name}_ETE_tree.refined.pdf")
     _ = ete_tree.render(fig_file_name, tree_style=ts, w=int(1800), units="mm")
 
-    fig_file_name = str(output_dir / patient_name / f"{patient_name}_ETE_tree.refined.subclonal_snvs.png")
+    fig_file_name = str(output_dir / patient_name / f"{patient_name}_ETE_tree.refined.subclonal_snvs.pdf")
     _ = ete_tree_with_subclonal_snvs.render(fig_file_name, tree_style=ts, w=int(1800), units="mm")
 
 
@@ -544,8 +554,8 @@ for patient_name in patient_names:
     # # save figure
     # output_dir = Path('/Users/haochen/Desktop/Tapestri_analysis/Tapestri_data_batch2/falcon+condor/HZ_ETE_trees')
     (output_dir / patient_name / f"{patient_name}_clone_compo").mkdir(parents=True, exist_ok=True)
-    fig_file_name = str(output_dir / patient_name / f"{patient_name}_clone_compo" / f"{patient_name}_clone_compo-refined.png")
-    f1.savefig(fig_file_name, bbox_inches='tight', dpi=300)
+    fig_file_name = str(output_dir / patient_name / f"{patient_name}_clone_compo" / f"{patient_name}_clone_compo-refined.pdf")
+    f1.savefig(fig_file_name, bbox_inches='tight')
 
     # normalize the clone sizes
     sample_compo_stat_norm = sample_compo_stat.div(sample_compo_stat.sum(axis=1), axis=0)
@@ -566,8 +576,8 @@ for patient_name in patient_names:
     # # save figure
     # output_dir = Path('/Users/haochen/Desktop/Tapestri_analysis/Tapestri_data_batch2/falcon+condor/HZ_ETE_trees')
     (output_dir / patient_name / f"{patient_name}_clone_compo").mkdir(parents=True, exist_ok=True)
-    fig_file_name = str(output_dir / patient_name / f"{patient_name}_clone_compo" / f"{patient_name}_clone_compo-refined-normed.png")
-    f2.savefig(fig_file_name, bbox_inches='tight', dpi=300)
+    fig_file_name = str(output_dir / patient_name / f"{patient_name}_clone_compo" / f"{patient_name}_clone_compo-refined-normed.pdf")
+    f2.savefig(fig_file_name, bbox_inches='tight')
 
     # Clone profiles to file
     cn_clone_profiles_df.sort_index().to_csv(output_dir / patient_name / f"{patient_name}_final_clone_cn_profiles.csv", index=True)

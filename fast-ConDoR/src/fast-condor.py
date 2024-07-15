@@ -55,7 +55,7 @@ def main(args):
         with open(args.subclonal_mutations, 'r') as file:
             subclonal_mutations = yaml.safe_load(file)
     else:
-        print("[WARNING] subclonal mutations file not found. Proceeding without automatic subclonal mutation selection & refinement.")
+        print("[WARNING] manually enforced subclonal mutations file not found. Proceeding with automatic subclonal mutation selection & refinement.")
 
     cn_profiles = None
 

@@ -12,6 +12,7 @@ rule all:
 		expand("condor_outputs/{dataset}/heatmaps/condor_solution_heatmap.png", dataset=config["datasets"]),
 
 # sanity check first
+patient_subclonal_snv_yaml = {}
 for patient_i in config["datasets"]:
 	if len(list(Path(config["raw_data_directory"]).glob(f"{patient_i}*.h5"))) != 1:
 		raise ValueError(f"Expected 1 h5 file for {patient_i}, found {len(list(Path(config['raw_data_directory']).glob(f'{patient_i}*.h5')))}")
@@ -22,6 +23,14 @@ for patient_i in config["datasets"]:
 	snv_list = list(Path(config["annotated_mutations"]).glob(f"{patient_i}*voi*.txt"))
 	if len(snv_list) != 1:
 		raise ValueError(f"Expected 1 annotated mutation file for {patient_i}, found {len(snv_list)}")
+	subclonal_snv_yaml = list(Path(config["subclonal_mutations"]).glob(f"{patient_i}*subclonal_mutations*.yaml"))
+	if len(subclonal_snv_yaml) >0:
+		print(f"Found {len(subclonal_snv_yaml)} subclonal mutation files for {patient_i}")
+		if len(subclonal_snv_yaml) > 1:
+			raise ValueError(f"Expected 1 subclonal mutation file for {patient_i}, found {len(subclonal_snv_yaml)}")
+		patient_subclonal_snv_yaml[patient_i] = subclonal_snv_yaml[0]
+	else:
+		patient_subclonal_snv_yaml[patient_i] = None
 
 def __get_input_h5(wildcards):
 	return list(Path(config["raw_data_directory"]).glob(f"{wildcards.dataset}*.h5"))[0]
@@ -89,7 +98,7 @@ rule fast_condor:
 		fast_condor_script = config["fast_condor_script"],
 		amplicon_coordinates_file = config["amplicon_coordinates_file"],
 		output_prefix = "condor_outputs/{dataset}/out",
-		subclonal_mutations = lambda wildcards: f'{config["subclonal_mutations"]}/{wildcards.dataset}.subclonal_mutations.yaml',
+		subclonal_mutations = lambda wildcards: patient_subclonal_snv_yaml[wildcards.dataset],
 	log:
 		std="condor_outputs/{dataset}/condor_outputs.log",
 		err="condor_outputs/{dataset}/condor_outputs.err.log",

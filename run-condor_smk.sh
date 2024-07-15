@@ -16,6 +16,6 @@ snakemake -s /data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/condor_
     --configfile /data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/config-MSK.yaml \
     --use-conda \
     --conda-prefix /data/iacobuzc/haochen/Tapestri_project/TapVarCallSmk/conda \
-    --cores all
+    --cores all 
 
 
