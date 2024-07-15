@@ -133,7 +133,7 @@ def main(args):
     df_total_readcounts = pd.read_csv(args.t)
     df_amplicon = pd.read_csv(args.i)
     if not "chr" not in df_amplicon.columns:
-        if "chrom" in df_amplicon.columns:
+        if not "chrom" in df_amplicon.columns:
             raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
         else:
             # rename

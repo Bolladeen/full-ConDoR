@@ -10,10 +10,11 @@ if [ -f ~/.bashrc ] ; then
     . ~/.bashrc
 fi
 
-mamba activate condor
+conda activate condor
 
 snakemake -s /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/condor_pipeline.smk \
-    --configfile /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/config-MSK.yaml \
-    --cores 4
+    --configfile /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/config_MSK_hz_local.yaml \
+    --cores 4 \
+    --use-conda
 
 

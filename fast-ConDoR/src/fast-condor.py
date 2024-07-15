@@ -84,7 +84,7 @@ def main(args):
     if args.f:
         df_amplicon = pd.read_csv(args.m, index_col = 0)
         if not "chr" not in df_amplicon.columns:
-            if "chrom" in df_amplicon.columns:
+            if not "chrom" in df_amplicon.columns:
                 raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
             else:
                 # rename
