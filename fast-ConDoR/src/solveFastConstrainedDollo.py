@@ -275,8 +275,6 @@ class solveFastConstrainedDollo():
         model.setParam(gp.GRB.Param.IntFeasTol, 1e-6)
         model.setParam(gp.GRB.Param.OptimalityTol, 1e-6)
         
-        # model.write('test_model_turing.lp')
-        
         model.optimize()
         if model.status == gp.GRB.OPTIMAL:
 
