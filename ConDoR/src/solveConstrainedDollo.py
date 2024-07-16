@@ -33,7 +33,6 @@ class solveConstrainedDollo():
         self.k = k
         self.fp = fp
         self.fn = fn        
-        
         # read count matrices
         self.df_total_readcounts = df_total_readcounts        
         if df_total_readcounts is not None:
@@ -123,10 +122,10 @@ class solveConstrainedDollo():
                     cluster = clustering[i]
                     csum += c[cluster,j,s]
 
-                if self.mutation_list[j] not in self.snp_list:
-                    model.addConstr(csum + b[i,j] <= 1)
-                else:
-                    model.addConstr(csum + b[i,j] == 1)
+                #if self.mutation_list[j] not in self.snp_list:
+                    #model.addConstr(csum + b[i,j] <= 1)
+                #else:
+                model.addConstr(csum + b[i,j] == 1)
                 model.addConstr(x[i,j] == b[i,j] + csum)
         
         # symmetry breaking
@@ -294,15 +293,8 @@ class solveConstrainedDollo():
             none_entries = np.sum(self.A == 1)            
             opt_obj_value = model.getObjective().getValue()            
             print(f'{nzero_entries}, {none_entries}, {opt_obj_value}')
-            #print(f'log likelihood: {opt_obj_value + nzero_entries * np.log(1 - self.fn) + none_entries * np.log(self.fp)}')
-
-#             solb = np.zeros((ncells, nmutations))
             
-#             for i in range(ncells):
-#                 for j in range(nmutations):
-#                     solb[i,j] = np.abs(model.getAttr('x', b)[i,j])
             solb = np.rint(np.reshape(model.getAttr('x', b).values(), (ncells, nmutations)))
-
             solc = model.getAttr('x', c)
             for l in range(nclusters):
                 for j in range(nmutations):

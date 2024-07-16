@@ -46,30 +46,19 @@ class solveFastConstrainedDollo():
         
         # input character matrix and clustering
         self.df_character_matrix = df_character_matrix
+        self.df_total_readcounts = df_total_readcounts
+        self.df_variant_readcounts = df_variant_readcounts
         self.clustering = self.df_character_matrix['cluster_id'].values
         self.df_clustering = self.df_character_matrix['cluster_id']
         self.A = df_character_matrix.values[:, :-1]
         self.snp_list = snp_list
-        # AKHIL additions
-        self.snv_list = snv_list
+        
         self.df_gain = None
         self.sample = sample
         self.scr_flag = scr_flag
         self.subclonal_mutations = subclonal_mutations
         self.cnp = cnp
             
-        def mut_replace(x):
-            x = x.replace(":", "_").replace("/" , "_").split('_')
-            x[2], x[3] = x[3], x[2]
-            return "_".join(x)
-        
-        # mapping_dict = list(map(mut_replace, annotations['var_ann'].index))
-        # mapping_dict = dict(zip(annotations['var_ann'].index, mapping_dict))
-
-        # # Rename the index using the new_index
-        # annotations.rename(index=mapping_dict, inplace=True)
-        # self.mapping_dict = {idx:annotations['var_ann'].loc[idx].values[0] for idx in annotations['var_ann'].index}
-    
         self.mutation_list = list(df_character_matrix.columns[:-1])
         
         # input data parameters
@@ -106,11 +95,8 @@ class solveFastConstrainedDollo():
 
         for i in range(self.nclusters):
             for j in range(self.nmutations):
-                #self.cluster_presence_coeff_mat[i,j] = np.sum(presence_coeff_mat[self.clustering == i, j])
                 self.cluster_presence_coeff_mat[i,j] = np.sum(presence_coeff_mat[self.clustering == i, j])
-                #self.cluster_absence_coeff_mat[i,j] = np.sum(absence_coeff_mat[self.clustering == i, j])
                 self.cluster_absence_coeff_mat[i,j] = absence_coeff_mat[self.clustering == i, j].shape[0] * np.median(absence_coeff_mat[self.clustering == i, j])
-                #self.cluster_hompresence_coeff_mat[i,j] = np.sum(hompresence_coeff_mat[self.clustering == i, j])        
                 self.cluster_hompresence_coeff_mat[i,j] = hompresence_coeff_mat[self.clustering == i, j].shape[0] * np.median(hompresence_coeff_mat[self.clustering == i, j])        
 
         self.cluster_plus_state_mat = np.maximum(self.cluster_presence_coeff_mat, self.cluster_absence_coeff_mat)
@@ -122,7 +108,7 @@ class solveFastConstrainedDollo():
 
         # solution
         self.solB = None
-        # self.solT_cell = None
+        self.solT_cell = None
         self.solT_mut = None
 
     def solveSetInclusion(self):
@@ -322,8 +308,6 @@ class solveFastConstrainedDollo():
                 return leaf_nodes
    
 
-            for node in self.solT_mut.nodes():
-                print(node)
             if self.scr_flag == True:
                 valid_mutations = set()
                 for edge in self.solT_cell.edges():
@@ -341,22 +325,15 @@ class solveFastConstrainedDollo():
 
                     helper_dict[cluster_idx] = gained_mutations
 
-                for k, v in helper_dict.items():
-                    print(k)
-                    print(v)
-                
                 tree_mutations = {m[:-2] : find_leaf_nodes_with_int_values(self.solT_cell, m) for m in self.solT_mut.nodes() if len(m) > 4}
                 for cluster_idx in range(nclusters):
                     gained_mutations = [mut for mut in self.mutation_list if self.df_gain.loc[cluster_idx][mut] == 1 and (mut not in tree_mutations.keys() or len(tree_mutations[mut]) < 2) ]
                     cluster = self.df_clustering.index[self.df_clustering == cluster_idx].to_list()
-                    
                     if self.subclonal_mutations is not None:
+                        gained_mutations = []
                         if cluster_idx in self.subclonal_mutations.keys():
                             gained_mutations.extend(self.subclonal_mutations[cluster_idx])
                     
-                    #else:
-                        #if cluster_idx == 1:
-                            #gained_mutations.extend(["chr3:30715617:G/T", "chr3:30715619:C/G", "chr3:30713659:CGCCAAGG/C", "chr11:71943807:A/T", "chr3:178936082:G/C", "chr15:67482870:C/T"])
                     for m in [item for item in gained_mutations if item in result_columns]:
                         for n in [n for n in self.solT_cell.nodes() if len(str(n)) > 4 and n[:-2] == m]:
                             if self.solT_cell.has_node(n):
@@ -386,9 +363,10 @@ class solveFastConstrainedDollo():
                                 cell_attachments[cluster_idx][cluster_idx].append(cell)
 
                     else:
-                        solver = solveConstrainedDollo(self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], k=0, fp =0.001, fn=0.001, ado_precision=50)
+                        solver = solveConstrainedDollo(df_character_matrix=self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], df_total_readcounts=self.df_total_readcounts[gained_mutations].loc[cluster], df_variant_readcounts=self.df_variant_readcounts[gained_mutations].loc[cluster], k=0, fp=0.001, fn=0.001, ado_precision=15)
                         solver.solveSetInclusion(1800)
                         subclonal_snvs[cluster_idx] = solver.solT_cell
+                        
 
                 for c, m in subclonal_snvs.items():
                     if m is not None:
@@ -423,24 +401,27 @@ class solveFastConstrainedDollo():
                         self.solT_cell.nodes[k]['cell_attachment'] = cell_attachments[k]
                     else:
                         for v in cell_attachments[k].keys():
-                            self.solT_cell.nodes[v]['cell_attachment'] = cell_attachments[k][v]
+                            if v.startswith('r'):
+                                self.solT_cell.nodes[k]['cell_attachment'] = cell_attachments[k][v]
+                            else:
+                                self.solT_cell.nodes[v]['cell_attachment'] = cell_attachments[k][v]
 
                 for node in self.solT_cell.nodes():
                     if type(node) == int:
                         self.solT_cell.nodes[node]['cn_profile'] = self.cnp.loc[node] # @HZ this is a Pandas Series with column names as amplicons
 
-                def find_subchains(graph, start_node, current_chain, chains):
-                    current_chain.append(start_node)
-                    if len(list(graph.neighbors(start_node))) == 0:
-                        if len(current_chain) > 1:
-                            chains.append(current_chain)
-                    elif len(list(graph.neighbors(start_node))) == 1:
-                        find_subchains(graph, list(graph.neighbors(start_node))[0], current_chain, chains)
-                    else:
-                        if len(current_chain) > 1:
-                            chains.append(current_chain)
-                        for neighbor in graph.neighbors(start_node):
-                            find_subchains(graph, neighbor, [], chains)
+            def find_subchains(graph, start_node, current_chain, chains):
+                current_chain.append(start_node)
+                if len(list(graph.neighbors(start_node))) == 0:
+                    if len(current_chain) > 1:
+                        chains.append(current_chain)
+                elif len(list(graph.neighbors(start_node))) == 1:
+                    find_subchains(graph, list(graph.neighbors(start_node))[0], current_chain, chains)
+                else:
+                    if len(current_chain) > 1:
+                        chains.append(current_chain)
+                    for neighbor in graph.neighbors(start_node):
+                        find_subchains(graph, neighbor, [], chains)
                         
             def reorder_chain(chain, t):
                 chain_root = list(t.predecessors(chain[0]))[0]
@@ -494,7 +475,6 @@ class solveFastConstrainedDollo():
 
 
             
-                        
             def remove_tree_nodes(g, nodes_to_remove):
                 new_edges = []
                 for m in nodes_to_remove:
@@ -509,12 +489,10 @@ class solveFastConstrainedDollo():
                                     new_edges.append((predecessor, successor))
                 return g, new_edges
             
-            print(self.df_clustering.value_counts())
             for chain in optimizable_subchains:
                 chain_root = list(self.solT_cell.predecessors(chain[0]))[0]
                 chain_tail = list(self.solT_cell.successors(chain[-1]))
                 subclusters = find_leaf_nodes_with_int_values(self.solT_cell, chain[0])
-                print('subclusters', subclusters)
                 self.solT_cell, new_edges = remove_tree_nodes(self.solT_cell, chain)
                 cluster = []
                 for cidx in subclusters:
@@ -553,8 +531,6 @@ class solveFastConstrainedDollo():
                     self.solT_cell.add_node(node)
                     self.solT_cell.nodes[node]['cell_attachment'] = best_cell_attachment[node]
 
-                    print(node, len(best_cell_attachment[node]))
-
                 for idx, node in enumerate(best_permute):
                     if idx < len(best_permute) - 1:
                         self.solT_cell.add_edge(best_permute[idx], best_permute[idx + 1])
@@ -584,7 +560,6 @@ class solveFastConstrainedDollo():
                         total_cells += len(self.solT_cell.nodes[node]['cell_attachment'])
                     print(f"Node {node}: {len(self.solT_cell.nodes[node]['cell_attachment'])}")
 
-            print('total cells', total_cells)
 
     def writeSolution(self, fname):
         if self.solB is not None:
