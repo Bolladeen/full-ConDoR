@@ -10,12 +10,10 @@ if [ -f ~/.bashrc ] ; then
     . ~/.bashrc
 fi
 
-conda activate condor
+conda activate snakemake
 
 snakemake -s /data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/condor_pipeline.smk \
-    --configfile /data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/config-MSK.yaml \
-    --use-conda \
-    --conda-prefix /data/iacobuzc/haochen/Tapestri_project/TapVarCallSmk/conda \
-    --cores all 
-
+    --configfile /data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/config_MSK_hz_lilac.yaml \
+    --profile lsf \
+    --use-conda 
 
