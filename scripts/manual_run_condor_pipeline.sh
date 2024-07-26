@@ -1,7 +1,7 @@
 # # ===== 1a.generate condor input =====
 # mamba activate mosaic-custom
 
-# script=/home/zhangh5/work/Tapestri_batch2/analysis/condor_pipeline/scripts/generate_condor_input.py
+# script=/Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/scripts/1a_generate_condor_input.py
 
 # python ${script} \
 #     -d M04 \
@@ -19,16 +19,35 @@
 # patients=("M04" "M07" "M11" "M12" "M13" "RA15_06" "RA15_16" "RA16_08" "RA16_29" "RA17_13" "RA17_22" "RA19_02" "RA19_10" "RA19_21" "RA20_05" "RA21_17" "TP6" "TP12")
 
 
-# ===== 1b. generate pre-condor heatmaps =====
-conda activate mosaic
-SC_HEATMAP_SCRIPT=/Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/scripts/1b_generate_sc_heatmaps.py
+# # ===== 1b. generate pre-condor heatmaps =====
+# conda activate mosaic
+# SC_HEATMAP_SCRIPT=/Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/scripts/1b_generate_sc_heatmaps.py
 
-python ${SC_HEATMAP_SCRIPT} \
-    --patient_name BPA-4 \
-    --patient_h5 /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/fillout_h5/BPA-4.patient_wide.genotyped.h5 \
-    --snv_f /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/manual_annotated_snv_lists/BPA-4-all_vars-voi.hz_curated.txt\
-    --clone_assignment /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/falcon_solutions/BPA-4-RSX_homdel_nclones=9.sample_sc_clone_assignment.updated.csv \
-    --output_dir /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/condor_pipeline_new
+# python ${SC_HEATMAP_SCRIPT} \
+#     --patient_name BPA-4 \
+#     --patient_h5 /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/fillout_h5/BPA-4.patient_wide.genotyped.h5 \
+#     --snv_f /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/manual_annotated_snv_lists/BPA-4-all_vars-voi.hz_curated.txt\
+#     --clone_assignment /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/falcon_solutions/BPA-4-RSX_homdel_nclones=9.sample_sc_clone_assignment.updated.csv \
+#     --output_dir /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/condor_pipeline_new
+
+# ===== 2 fast-condor =====
+conda activate condor
+
+FAST_CONDOR_SCRIPT=/Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/fast-ConDoR/src/fast-condor.py
+
+cd /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/condor_pipeline_new
+
+python /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/fast-ConDoR/src/fast-condor.py \
+    -i condor_inputs/M04/character_bin_matrix.csv\
+    -r condor_inputs/M04/total_readcounts.csv \
+    -v condor_inputs/M04/alt_readcounts.csv  \
+    -s condor_inputs/M04/germline_mutations.txt  \
+    -s2 condor_inputs/M04/somatic_mutations.txt -o condor_outputs/M04/out \
+    -m /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/references/amplicon_panel.csv \
+    -d M04 \
+    --scr \
+    --cnp /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/falcon_solutions/M04.unique_cn_clone_profiles.csv \
+    --subclonal_mutations /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/manual_subclonal_snvs/M04.subclonal_mutations.yaml 
 
 
 # # ===== generate dot and png plots =====
@@ -66,13 +85,13 @@ python ${SC_HEATMAP_SCRIPT} \
 
 # echo "Script execution complete."
 
-# ===== 4a. condor trees --> ETE trees =====
-conda activate condor
-ETE_TREE_SCRIPT=/Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/condor_downstream/4a_make_ete_tree_with_subclonal_snvs.py
-python ${ETE_TREE_SCRIPT} \
-    --amp_gene_map /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/references/panel3559_analysis.gene_cytoband.formatted.manual_adjusted.gene_pos_ado_added.csv \
-    --sample_name_map /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/Tapestri_batch2_samples_MASTER_INTERNAL.xlsx \
-    --patient_name M04 \
-    --condor_tree_pickle /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/condor_pipeline_OLD/condor_outputs/pickle_files/M04_self.solT_cell \
-    --snv_ann_f /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/manual_annotated_snv_lists/M04-patient-all_vars-voi.hz_curated.txt \
-    --output_dir /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/condor_pipeline_new/condor_downstream
+# # ===== 4a. condor trees --> ETE trees =====
+# conda activate condor
+# ETE_TREE_SCRIPT=/Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/condor_downstream/4a_make_ete_tree_with_subclonal_snvs.py
+# python ${ETE_TREE_SCRIPT} \
+#     --amp_gene_map /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/full-ConDoR/references/panel3559_analysis.gene_cytoband.formatted.manual_adjusted.gene_pos_ado_added.csv \
+#     --sample_name_map /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/Tapestri_batch2_samples_MASTER_INTERNAL.xlsx \
+#     --patient_name M04 \
+#     --condor_tree_pickle /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/condor_pipeline_OLD/condor_outputs/pickle_files/M04_self.solT_cell \
+#     --snv_ann_f /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_main_manuscript_analysis/data_compiled/manual_annotated_snv_lists/M04-patient-all_vars-voi.hz_curated.txt \
+#     --output_dir /Users/hzhang/Library/CloudStorage/OneDrive-MemorialSloanKetteringCancerCenter/Iacobuzio_lab/Tapestri_batch2/condor_pipeline_new/condor_downstream

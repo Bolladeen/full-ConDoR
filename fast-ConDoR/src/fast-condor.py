@@ -83,7 +83,7 @@ def main(args):
     # filter mutations @HZ: what does this do?
     if args.f:
         df_amplicon = pd.read_csv(args.m, index_col = 0)
-        if not "chr" not in df_amplicon.columns:
+        if "chr" not in df_amplicon.columns:
             if not "chrom" in df_amplicon.columns:
                 raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
             else:
@@ -96,12 +96,17 @@ def main(args):
             mut_chr = mutation.split('_')[0].lstrip('chr')
             mut_pos = int(mutation.split('_')[1])
             mut_gene = df_amplicon[((df_amplicon['chr'] == mut_chr) &
-                                    (df_amplicon['min_pos'] <= mut_pos) &
-                                    (df_amplicon['max_pos'] >= mut_pos))]['gene'].values[0]
+                                    (df_amplicon['insert_start'] <= mut_pos) &
+                                    (df_amplicon['insert_end'] >= mut_pos))]['gene'].values[0]
             mut_data.append([mutation, mut_chr, mut_pos, mut_gene])
 
         df_mut_meta = pd.DataFrame(mut_data, columns = ['mutation', 'chr', 'pos', 'gene'])
-
+        print("==== [DEBUG] ====")
+        print("--> df_amplicon")
+        print(df_amplicon)
+        print("--> df_mut_meta")
+        print(df_mut_meta)
+        print("==== [DEBUG] ====")
         ## remove chormosome X mutations
         df_mut_meta_selected = df_mut_meta[df_mut_meta['chr'] != 'X']
         df_mut_meta_selected['chr'] = df_mut_meta_selected['chr'].apply(lambda x: int(x))

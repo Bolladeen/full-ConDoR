@@ -381,8 +381,7 @@ class solveFastConstrainedDollo():
 
                     else:
                         #solver = solveConstrainedDollo(self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], k=0, fp=0.001, fn=0.001, ado_precision=10)
-                        solver = solveConstrainedDollo(df_character_matrix=self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], df_total_readcounts=self.df_total_readcounts[gained_mutations], df_variant_readcounts=self.df_variant_readcounts[gained_mutations], k=0, fp=0.001, fn=0.001, ado_precision=15)
-
+                        solver = solveConstrainedDollo(df_character_matrix=self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], df_total_readcounts=self.df_total_readcounts[gained_mutations].loc[cluster], df_variant_readcounts=self.df_variant_readcounts[gained_mutations].loc[cluster], k=0, fp=0.001, fn=0.001, ado_precision=15)
                         solver.solveSetInclusion(1800)
                         subclonal_snvs[cluster_idx] = solver.solT_cell
 
@@ -436,18 +435,18 @@ class solveFastConstrainedDollo():
                     if type(node) == int:
                         self.solT_cell.nodes[node]['cn_profile'] = self.cnp.loc[node] # @HZ this is a Pandas Series with column names as amplicons
 
-                def find_subchains(graph, start_node, current_chain, chains):
-                    current_chain.append(start_node)
-                    if len(list(graph.neighbors(start_node))) == 0:
-                        if len(current_chain) > 1:
-                            chains.append(current_chain)
-                    elif len(list(graph.neighbors(start_node))) == 1:
-                        find_subchains(graph, list(graph.neighbors(start_node))[0], current_chain, chains)
-                    else:
-                        if len(current_chain) > 1:
-                            chains.append(current_chain)
-                        for neighbor in graph.neighbors(start_node):
-                            find_subchains(graph, neighbor, [], chains)
+            def find_subchains(graph, start_node, current_chain, chains):
+                current_chain.append(start_node)
+                if len(list(graph.neighbors(start_node))) == 0:
+                    if len(current_chain) > 1:
+                        chains.append(current_chain)
+                elif len(list(graph.neighbors(start_node))) == 1:
+                    find_subchains(graph, list(graph.neighbors(start_node))[0], current_chain, chains)
+                else:
+                    if len(current_chain) > 1:
+                        chains.append(current_chain)
+                    for neighbor in graph.neighbors(start_node):
+                        find_subchains(graph, neighbor, [], chains)
 
             def reorder_chain(chain, t):
                 chain_root = list(t.predecessors(chain[0]))[0]
