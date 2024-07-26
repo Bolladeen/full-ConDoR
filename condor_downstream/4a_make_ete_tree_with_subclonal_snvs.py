@@ -144,10 +144,13 @@ def main(args):
                 subclonal_trees[node.name] = node.copy()
                 # get all children's cells and remove all children from the node
                 for subclone in node.get_descendants():
-                    subclone_cells = nx_tree.nodes()[subclone.name]["cell_attachment"]
-                    subclone_size = len(subclone_cells)
-                    cn_clone_cells = list(set(cn_clone_cells) | set(subclone_cells))
-                    cn_clone_size += subclone_size
+                    if "cell_attachment" in nx_tree.nodes()[subclone.name]:
+                        subclone_cells = nx_tree.nodes()[subclone.name]["cell_attachment"]
+                        subclone_size = len(subclone_cells)
+                        cn_clone_cells = list(set(cn_clone_cells) | set(subclone_cells))
+                        cn_clone_size += subclone_size
+                    else:
+                        logger.warning(f"subclonal SNV {subclone.name} has no cell attachment")
                 node.children = []
             else:
                 logger.info(f"[Leaf node] {node.name} with no subclonal SNV tree")

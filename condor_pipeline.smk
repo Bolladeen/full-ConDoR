@@ -7,17 +7,18 @@ rule all:
 	input:
 		# expand("{patient}/opt_nclones/optimal_cell_assignments.csv", patient=config["patients"]),
 		# expand("{patient}/clonal_refinement/refined_cell_assignments.csv", patient=config["patients"]),
-		expand("condor_inputs/{patient}/character_vaf_matrix.csv", patient=config["patients"]),
-		expand("condor_outputs/{patient}/out_tree.newick", patient=config["patients"]),
-		expand("condor_outputs/{patient}/heatmaps/condor_solution_heatmap.png", patient=config["patients"]),
-		expand("condor_downstream/{patient}/{patient}_ETE_tree.refined.subclonal_snvs.png", patient=config["patients"]),
-		expand("condor_downstream/{patient}/{patient}_final_sc_clone_assignment.csv", patient=config["patients"]),
-		expand("pre_condor_sc_heatmaps/{patient}_DNA_heatmap.pdf", patient=config["patients"]),
-		expand("post_condor_sc_heatmaps/{patient}_DNA_heatmap.pdf", patient=config["patients"]),
+		# expand("condor_inputs/{patient}/character_vaf_matrix.csv", patient=config["patients"]),
+		# expand("condor_outputs/{patient}/out_tree.newick", patient=config["patients"]),
+		# expand("condor_outputs/{patient}/heatmaps/condor_solution_heatmap.png", patient=config["patients"]),
+		# expand("condor_downstream/{patient}/{patient}_ETE_tree.refined.subclonal_snvs.png", patient=config["patients"]),
+		# expand("condor_downstream/{patient}/{patient}_final_sc_clone_assignment.csv", patient=config["patients"]),
+		# expand("pre_condor_sc_heatmaps/{patient}_DNA_heatmap.pdf", patient=config["patients"]),
+		# expand("post_condor_sc_heatmaps/{patient}_DNA_heatmap.pdf", patient=config["patients"]),
+		expand("condor_downstream/{patient}/post_condor_cn_info/{patient}.cn_clone_profiles.png", patient=config["patients"]),
 
 # sanity check first
 patient_subclonal_snv_yaml = {}
-for patient_i in config["datasets"]:
+for patient_i in config["patients"]:
 	if len(list(Path(config["raw_data_directory"]).glob(f"{patient_i}*.h5"))) != 1:
 		raise ValueError(f"Expected 1 h5 file for {patient_i}, found {len(list(Path(config['raw_data_directory']).glob(f'{patient_i}*.h5')))}")
 	if len(list(Path(config["falcon_solutions"]).glob(f"{patient_i}*assignment*.csv"))) != 1:
@@ -134,8 +135,8 @@ rule fast_condor:
 	params:
 		fast_condor_script = config["fast_condor_script"],
 		amplicon_coordinates_file = config["amplicon_coordinates_file"],
-		output_prefix = "condor_outputs/{dataset}/out",
-		subclonal_mutations = lambda wildcards: patient_subclonal_snv_yaml[wildcards.dataset],
+		output_prefix = "condor_outputs/{patient}/out",
+		subclonal_mutations = lambda wildcards: patient_subclonal_snv_yaml[wildcards.patient],
 	log:
 		std="condor_outputs/{patient}/condor_outputs.log",
 		err="condor_outputs/{patient}/condor_outputs.err.log",
@@ -270,6 +271,34 @@ rule generate_post_condor_sc_heatmaps:
 			--post_condor \
 			1> {log.std} 2> {log.err}
 		"""
-	
+rule plot_post_condor_cn_clones:
+	input:
+		post_condor_clone_cn_profiles = "condor_downstream/{patient}/{patient}_final_clone_cn_profiles.csv",
+		post_condor_clone_assignment = "condor_downstream/{patient}/{patient}_final_sc_clone_assignment.csv",
+	params:
+		tap_cn_call_plot_script = config["tap_cn_call_plot_script"],
+		amp_gene_map_f = config["amplicon_coordinates_file"],
+		output_dir = "condor_downstream/{patient}/post_condor_cn_info",
+	output:
+		post_condor_cn_clone_profiles = "condor_downstream/{patient}/post_condor_cn_info/{patient}.cn_clone_profiles.png",
+	conda: "mosaic"
+	log:
+		std="condor_downstream/{patient}/post_condor_cn_info/{patient}.cn_clone_profiles.log",
+		err="condor_downstream/{patient}/post_condor_cn_info/{patient}.cn_clone_profiles.err.log",
+	threads: lambda wildcards, attempt: attempt * 4
+	resources:
+		mem_mb = 8000,
+		time_min = lambda wildcards, attempt: attempt * 59,
+	retries: 2
+	shell:
+		"""
+	    python {params.tap_cn_call_plot_script} \
+        --cohort_name {wildcards.patient} \
+        --amp_gene_map_f {params.amp_gene_map_f} \
+        --cn_clone_profiles_csv {input.post_condor_clone_cn_profiles} \
+        --sample_sc_clone_assignment_csv {input.post_condor_clone_assignment} \
+        --output_dir {params.output_dir} \
+        --omit_clone_cleanup
+		"""
 
 
