@@ -9,7 +9,7 @@ import itertools
 
 import seaborn as sns
 from matplotlib.colors import LinearSegmentedColormap
-
+from IPython import embed
 def generate_condor_solution_heatmap(df_vaf, df_variant_readcounts, df_character_matrix, df_multistate, sorted_mutation_list, snv_annotations, germline_mutations, somatic_mutations):
     df_solution = df_variant_readcounts.copy()
     clustering = df_character_matrix['cluster_id']
@@ -132,7 +132,7 @@ def main(args):
     df_variant_readcounts = pd.read_csv(args.a)
     df_total_readcounts = pd.read_csv(args.t)
     df_amplicon = pd.read_csv(args.i)
-    if not "chr" not in df_amplicon.columns:
+    if not "chr" in df_amplicon.columns:
         if not "chrom" in df_amplicon.columns:
             raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
         else:
@@ -140,15 +140,17 @@ def main(args):
             df_amplicon = df_amplicon.rename(columns={"chrom": "chr"})
 
     selected_mutation_list = [col for col in df_vaf.columns if col.startswith('chr')]
-    
+    df_amplicon["chr"] = df_amplicon["chr"].str.lstrip("chr")
     mut_data = []
+    # embed()
     for mutation in selected_mutation_list:
         mut_chr = mutation.split(':')[0].lstrip('chr')
         print(mutation)
         mut_pos = int(mutation.split(':')[1]) # <<<<<<<<<<
-        mut_gene = df_amplicon[((df_amplicon['chrom'] == mut_chr) &
-                                (df_amplicon['min_pos'] <= mut_pos) &
-                                (df_amplicon['max_pos'] >= mut_pos-1))]['gene'].values[0]
+        # embed()
+        mut_gene = df_amplicon[((df_amplicon['chr'] == mut_chr) &
+                                (df_amplicon['insert_start'] <= mut_pos) &
+                                (df_amplicon['insert_end'] >= mut_pos-1))]['gene_name'].values[0]
         mut_data.append([mutation, mut_chr, mut_pos, mut_gene])
     
     df_mut_meta_selected = pd.DataFrame(mut_data, columns = ['mutation', 'chr', 'pos', 'gene'])

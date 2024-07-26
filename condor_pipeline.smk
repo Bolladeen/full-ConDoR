@@ -131,7 +131,7 @@ rule fast_condor:
 		std="condor_outputs/{patient}/condor_outputs.log",
 		err="condor_outputs/{patient}/condor_outputs.err.log",
 	conda: "condor"
-	threads: lambda wildcards, attempt: attempt * 4
+	threads: lambda wildcards, attempt: (attempt**2) * 4
 	resources:
 		mem_gb = 16,
 		time_min = lambda wildcards, attempt: attempt * 119,
@@ -199,7 +199,7 @@ rule generate_solution_heatmaps:
 
 rule generate_ete_trees:
 	input:
-		condor_tree_pickle = "condor_outputs/pickle_files/{patient}_self.solT_cell",
+		ete_tree_pickle = "condor_outputs/pickle_files/{patient}_self.solT_cell",
 		snv_ann_f = __get_annotated_mutations,
 		amplicon_gene_mapping_f = config["amplicon_coordinates_file"],
 		sample_name_map_f = config["sample_name_map"],
@@ -211,8 +211,8 @@ rule generate_ete_trees:
 		output_dir = "condor_downstream",
 	conda: "condor"
 	log:
-		std="pre_condor_sc_heatmaps/logs/{patient}_heatmap.log",
-		err="pre_condor_sc_heatmaps/logs/{patient}_heatmap.err.log",
+		std="condor_downstream/logs/{patient}_ete_tree.log",
+		err="condor_downstream/logs/{patient}_ete_tree.err.log",
 	threads: lambda wildcards, attempt: attempt * 4
 	resources:
 		mem_mb = 8000,
@@ -220,20 +220,21 @@ rule generate_ete_trees:
 	retries: 1
 	shell:
 		"""
-		python ${params.condor_tree_to_ete_tree_script} \
+		python {params.condor_tree_to_ete_tree_script} \
 			--amp_gene_map {input.amplicon_gene_mapping_f} \
 			--sample_name_map {input.sample_name_map_f} \
 			--patient_name {wildcards.patient} \
 			--condor_tree_pickle {input.ete_tree_pickle} \
 			--snv_ann_f {input.snv_ann_f} \
-			--output_dir {params.output_dir}		
+			--output_dir {params.output_dir} \
+			1> {log.std} 2> {log.err}
 		"""
 
 
 rule generate_post_condor_sc_heatmaps:
 	input:
 		h5 = __get_input_h5,
-		post_condor_clone_assignment = __get_falcon_solution_cell_assignment,
+		post_condor_clone_assignment = "condor_downstream/{patient}/{patient}_final_sc_clone_assignment.csv",
 		annotated_mutations = __get_annotated_mutations,
 	output:
 		post_condor_sc_heatmap="post_condor_sc_heatmaps/{patient}_DNA_heatmap.pdf",
@@ -257,6 +258,7 @@ rule generate_post_condor_sc_heatmaps:
 			--snv_f {input.annotated_mutations} \
 			--clone_assignment {input.post_condor_clone_assignment} \
 			--output_dir {params.output_dir} \
+			--post_condor \
 			1> {log.std} 2> {log.err}
 		"""
 	

@@ -382,6 +382,7 @@ class solveFastConstrainedDollo():
                     else:
                         #solver = solveConstrainedDollo(self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], k=0, fp=0.001, fn=0.001, ado_precision=10)
                         solver = solveConstrainedDollo(df_character_matrix=self.df_character_matrix[gained_mutations + ['cluster_id']].loc[cluster], df_total_readcounts=self.df_total_readcounts[gained_mutations].loc[cluster], df_variant_readcounts=self.df_variant_readcounts[gained_mutations].loc[cluster], k=0, fp=0.001, fn=0.001, ado_precision=15)
+
                         solver.solveSetInclusion(1800)
                         subclonal_snvs[cluster_idx] = solver.solT_cell
 
@@ -426,7 +427,7 @@ class solveFastConstrainedDollo():
                         self.solT_cell.nodes[k]['cell_attachment'] = cell_attachments[k]
                     else:
                         for v in cell_attachments[k].keys():
-                            if v.startswith('r'):
+                            if str(v).startswith('r'):
                                 self.solT_cell.nodes[k]['cell_attachment'] = cell_attachments[k][v]
                             else:
                                 self.solT_cell.nodes[v]['cell_attachment'] = cell_attachments[k][v]

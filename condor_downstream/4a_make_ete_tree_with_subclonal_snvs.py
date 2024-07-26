@@ -5,9 +5,9 @@ import pandas as pd
 import numpy as np
 import pickle
 import ete3
-# set cwd to script dir
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
-print(f"cwd: {os.getcwd()}")
+# # set cwd to script dir
+# os.chdir(os.path.dirname(os.path.realpath(__file__)))
+# print(f"cwd: {os.getcwd()}")
 
 # per:
 # - https://github.com/etetoolkit/ete/issues/101

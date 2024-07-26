@@ -21,6 +21,18 @@ def main(args):
     cn_assignment_df = pd.read_csv(cn_assignment_f, index_col = 0)
     print(f'[INFO] Loaded CN clone assignment file {cn_assignment_f}.')
 
+    if args.post_condor:
+        cn_assignment_df['clone_id'] = cn_assignment_df["final_clone_id"]
+
+    # add cn_clone info
+    cn_assignment_df['cell_barcode_formatted'] = cn_assignment_df['cell_barcode'] + "-" + cn_assignment_df.index
+    cn_assignment_df.set_index('cell_barcode_formatted', inplace=True)
+
+    if args.post_condor:
+        # also fill in the diploid cells
+        # assign cells from pt that are not in cn_assignment_df to clone 0
+        cn_assignment_df = cn_assignment_df.reindex(pt.dna.barcodes(), fill_value=0)
+
     cn_clone_palette = dict(zip(
         np.sort(cn_assignment_df['clone_id'].unique()), 
         np.array(px.colors.qualitative.Set3)[np.sort(cn_assignment_df['clone_id'].unique())]
@@ -28,9 +40,6 @@ def main(args):
     # rename the keys
     cn_clone_palette = {f"CN_clone-{k}": v for k, v in cn_clone_palette.items()}
 
-    # add cn_clone info
-    cn_assignment_df['cell_barcode_formatted'] = cn_assignment_df['cell_barcode'] + "-" + cn_assignment_df.index
-    cn_assignment_df.set_index('cell_barcode_formatted', inplace=True)
     pt.dna.row_attrs['label'] = np.array(list(
         map(
             lambda x: f"CN_clone-{int(cn_assignment_df.loc[x, 'clone_id'])}", 
@@ -99,6 +108,7 @@ if __name__ == '__main__':
     parser.add_argument('--snv_f', type=str, help='input path to SNV file')
     parser.add_argument('--clone_assignment', type=str, help='input path to clone assignment file')
     parser.add_argument('--output_dir', type=str, help='output directory')
+    parser.add_argument('--post_condor', default=False, action='store_true', help='whether the clone assignment file is post-condor')
     args = parser.parse_args(None if sys.argv[1:] else ['-h'])
     main(args)
 
