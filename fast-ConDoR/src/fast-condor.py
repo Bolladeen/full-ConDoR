@@ -55,7 +55,7 @@ def main(args):
         with open(args.subclonal_mutations, 'r') as file:
             subclonal_mutations = yaml.safe_load(file)
     else:
-        print("[WARNING] subclonal mutations file not found. Proceeding without automatic subclonal mutation selection & refinement.")
+        print("[WARNING] manually enforced subclonal mutations file not found. Proceeding with automatic subclonal mutation selection & refinement.")
 
     cn_profiles = None
 
@@ -84,7 +84,7 @@ def main(args):
     if args.f:
         df_amplicon = pd.read_csv(args.m, index_col = 0)
         if not "chr" not in df_amplicon.columns:
-            if "chrom" in df_amplicon.columns:
+            if not "chrom" in df_amplicon.columns:
                 raise IndexError("amplicon metadata file must contain the column named 'chrom' or 'chr'")
             else:
                 # rename

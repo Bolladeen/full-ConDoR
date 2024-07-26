@@ -1,13 +1,13 @@
 # %% import and setup
-import sys, os
+import sys, os, argparse
 from copy import deepcopy
 import pandas as pd
 import numpy as np
 import pickle
 import ete3
-# set cwd to script dir
-os.chdir(os.path.dirname(os.path.realpath(__file__)))
-print(f"cwd: {os.getcwd()}")
+# # set cwd to script dir
+# os.chdir(os.path.dirname(os.path.realpath(__file__)))
+# print(f"cwd: {os.getcwd()}")
 
 # per:
 # - https://github.com/etetoolkit/ete/issues/101
@@ -26,68 +26,70 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 
 # del sys.modules['src.tree_io']
 
-from src.tree_io import nx_to_ete_tree, add_info_to_ete_tree
-from src.plotting_utils import rgb_string_to_hex, __hgvsp_3to1
+from plotting_utils import rgb_string_to_hex, __hgvsp_3to1
 # clone_color_sequence = sns.cubehelix_palette(n_colors = len(ete_tree.get_leaves()),start=.0, rot=2, light=0.8, dark=0.5, hue=3.5).as_hex()
 color_sequence = [rgb_string_to_hex(x) for x in px.colors.qualitative.Pastel]
 
-from src.refine_condor_tree import (
-    rm_blacklisted_events,
-    find_diploid_clone,
+from refine_condor_tree import (
     merge_clones_into_diploid,
     adjust_clone_number_and_color,
 )
-from src.sankoff_fixed_tree import get_sankoff_min_parsimony_tree
-
-amplicon_gene_mapping_f = "/data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/references/panel3559_analysis.gene_cytoband.formatted.manual_adjusted.gene_pos_ado_added.csv"
-# ----- read in sample anatomical name mapping file -----
-sample_name_map = pd.read_excel(
-    '/lila/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/Tapestri_batch2_samples_MASTER.xlsx',
-    sheet_name='all_sample_clinical_info',
-    ).set_index('sample')['HZ_official_site_name'].to_dict()
+from sankoff_fixed_tree import get_sankoff_min_parsimony_tree
+from ete_tree_style import ete_layout, add_edge_mutation_events, beautify_tree
 
 # %% Read in data
-pickle_dir = Path("/lila/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/0_condor_pipeline/condor_outputs/pickle_files")
-manual_snv_dir = Path(
-    "/lila/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/data_compiled/manual_annotated_snv_lists"
-)
-output_dir = Path("/lila/data/iacobuzc/haochen/Tapestri_main_manuscript_analysis/0_condor_pipeline/condor_downstream/ete_trees_refined_subclonal_snvs")
-output_dir.mkdir(exist_ok=True, parents=True)
+def main(args):
 
-patient_names = [str(f.stem).split("_self")[0] for f in pickle_dir.glob("*")]
-# patient_name = "BPA-5"
-patient_names = ["BPA-2"]
-for patient_name in patient_names:
+    # need the following inputs:
+    amplicon_gene_mapping_f = args.amp_gene_map
+    sample_name_map_f = args.sample_name_map
+    patient_name = args.patient_name
+    condor_tree_pickle = args.condor_tree_pickle
+    snv_ann_f = args.snv_ann_f
+    output_dir = Path(args.output_dir)
+
+    # ----- params for adjusting edge lengths ----
+    SNV_NORM=3
+    LOH_NORM=3
+    CNV_NORM=200
+        # node.dist = (
+        #     len(node.somatic_snv_events) / SNV_NORM
+        #     + len(node.germline_snp_events) / LOH_NORM
+        #     + node.dist / CNV_NORM
+        # )*100
+    
+    # amplicon_gene_mapping_f = "/data/iacobuzc/haochen/Tapestri_batch2/analysis/full-ConDoR/references/panel3559_analysis.gene_cytoband.formatted.manual_adjusted.gene_pos_ado_added.csv"
+    # ----- read in sample anatomical name mapping file -----
+    sample_name_map = pd.read_excel(
+        sample_name_map_f, 
+        sheet_name='all_sample_clinical_info'
+        ).set_index('sample')['HZ_official_site_name'].to_dict()
+
     print(f"Processing {patient_name}")
-    f = str(pickle_dir / f"{patient_name}_self.solT_cell")
 
-    with open(f, "rb") as f:
+    with open(condor_tree_pickle, "rb") as f:
         nx_tree = pickle.load(f)
 
     som_event_dict = {"0": "MISSING", "1": "GAIN", "2": "LOSS", "3": "LOH"}
     germ_event_dict = {"0": "MISSING", "2": "LOSS", "3": "LOH"}
 
     # %% Read in SNV annotation info
-    manual_snv_f = list(manual_snv_dir.glob(f"{patient_name}*voi*txt"))
-    # if not 1 file, raise error
-    if len(list(manual_snv_f)) != 1:
-        raise ValueError(f"> 1 or no manual annotated SNV file found for {patient_name}")
-    manual_snv = pd.read_csv(manual_snv_f[0], sep="\t", index_col=0, comment="#")
-    manual_snv["annotation"].fillna("", inplace=True)
-    # manual_snv["var_formatted"] = manual_snv.index.str.replace(":", "_").str.replace(
+    snv_ann = pd.read_csv(snv_ann_f, sep="\t", index_col=0, comment="#")
+    snv_ann["annotation"].fillna("", inplace=True)
+    # snv_ann["var_formatted"] = snv_ann.index.str.replace(":", "_").str.replace(
     #     "/", "_"
     # )
-    snv_annotation_map = manual_snv["HGVSp"].to_dict()
+    snv_annotation_map = snv_ann["HGVSp"].to_dict()
 
     for k, v in snv_annotation_map.items():
         snv_annotation_map[k] = __hgvsp_3to1(v)
 
     germline_events_set = set(
-        manual_snv[manual_snv["annotation"].str.contains("germline")].index
+        snv_ann[snv_ann["annotation"].str.contains("germline")].index
     )
-    # somatic_events = set(manual_snv[manual_snv['annotation'].str.contains('somatic')]['var_formatted'])
+    # somatic_events = set(snv_ann[snv_ann['annotation'].str.contains('somatic')]['var_formatted'])
     other_events_set = set(
-        manual_snv[~manual_snv["annotation"].str.contains("germline")].index
+        snv_ann[~snv_ann["annotation"].str.contains("germline")].index
     )
 
 
@@ -424,9 +426,7 @@ for patient_name in patient_names:
                 logger.warning(f"child {child.name} already exists in node {node.name}")
 
     # %% update the edge lengths
-    SNV_NORM=3
-    LOH_NORM=3
-    CNV_NORM=200
+
     """
     iterate through the tree. Each node's distance would be:
     N(somatic_snv_events)/SNV_NORM + N(germline_snp_events)/LOH_NORM + CNV_distance/CNV_NORM
@@ -447,9 +447,6 @@ for patient_name in patient_names:
 
 
     # %% Plot and save the tree
-
-    from src.ete_tree_style import ete_layout, add_edge_mutation_events, beautify_tree
-
     beautify_tree(ete_tree)
     beautify_tree(ete_tree_with_subclonal_snvs)
 
@@ -486,7 +483,6 @@ for patient_name in patient_names:
         pickle.dump(ete_tree_with_subclonal_snvs, f)
 
     # %% Plot clone composition
-
     # for each clone, get its constitutient single cells
 
     sc_clone_assignment_df = pd.DataFrame(columns=["sample_name", "cell_barcode", "final_clone_id"])
@@ -527,7 +523,7 @@ for patient_name in patient_names:
 
     # set the figure size
     sns.set(style="whitegrid")
-    f1, ax = plt.subplots(figsize=(len(sample_compo_stat.columns)*1.5, 5), dpi=200)
+    f1, ax = plt.subplots(figsize=(5, len(sample_compo_stat.columns)*1.5))
     sample_compo_stat.plot(
         ax = ax,
         kind='barh', 
@@ -541,15 +537,12 @@ for patient_name in patient_names:
         xlabel="Number of Single Cells"
         )
     sns.despine(left=True, bottom=True)
-    # # save figure
-    # output_dir = Path('/Users/haochen/Desktop/Tapestri_analysis/Tapestri_data_batch2/falcon+condor/HZ_ETE_trees')
-    (output_dir / patient_name / f"{patient_name}_clone_compo").mkdir(parents=True, exist_ok=True)
-    fig_file_name = str(output_dir / patient_name / f"{patient_name}_clone_compo" / f"{patient_name}_clone_compo-refined.png")
+    fig_file_name = str(output_dir / patient_name / f"{patient_name}_clone_compo-refined.png")
     f1.savefig(fig_file_name, bbox_inches='tight', dpi=300)
 
     # normalize the clone sizes
     sample_compo_stat_norm = sample_compo_stat.div(sample_compo_stat.sum(axis=1), axis=0)
-    f2, ax = plt.subplots(figsize=(len(sample_compo_stat.columns)*1.5, 5), dpi=200)
+    f2, ax = plt.subplots(figsize=(5, len(sample_compo_stat.columns)*1.5))
     sample_compo_stat_norm.plot(
         ax = ax,
         kind='barh',
@@ -563,10 +556,7 @@ for patient_name in patient_names:
         xlabel="Fraction of Single Cells"
         )
     sns.despine(left=True, bottom=True)
-    # # save figure
-    # output_dir = Path('/Users/haochen/Desktop/Tapestri_analysis/Tapestri_data_batch2/falcon+condor/HZ_ETE_trees')
-    (output_dir / patient_name / f"{patient_name}_clone_compo").mkdir(parents=True, exist_ok=True)
-    fig_file_name = str(output_dir / patient_name / f"{patient_name}_clone_compo" / f"{patient_name}_clone_compo-refined-normed.png")
+    fig_file_name = str(output_dir / patient_name / f"{patient_name}_clone_compo-refined-normed.png")
     f2.savefig(fig_file_name, bbox_inches='tight', dpi=300)
 
     # Clone profiles to file
@@ -590,3 +580,14 @@ for patient_name in patient_names:
 
 
 # %%
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--amp_gene_map', type=str, required=True, help='Path to the amplicon gene mapping file')
+    parser.add_argument('--sample_name_map', type=str, required=True, help='Path to the sample name mapping file. Sheet to be considered: `all_sample_clinical_info`; Columns: `sample` will be mapped to `HZ_official_site_name`')
+    parser.add_argument('--patient_name', type=str, required=True, help='Name of the patient')
+    parser.add_argument('--condor_tree_pickle', type=str, required=True, help='Path to the condor tree pickle file')
+    parser.add_argument('--snv_ann_f', type=str, required=True, help='Path to the SNV annotation file')
+    parser.add_argument('--output_dir', type=str, required=True, help='Output directory. Outputs will be written to /output_dir/patient_name/')
+    args = parser.parse_args()
+    main(args)
+

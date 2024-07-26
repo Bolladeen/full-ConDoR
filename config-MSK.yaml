@@ -1,21 +1,22 @@
 workdir: /data/iacobuzc/haochen/Tapestri_batch2/analysis/condor-pipeline
 datasets:
-  - M13
-  - RA16_08
+  # - M13
+  # - RA16_08
   # - BPA-2-IR
   # - BPA-3
+  - BPA-4-RSX
   # - BPA-5-RSX
 
 # ===== centralized data directory =====
-raw_data_directory: /data/iacobuzc/haochen/Tapestri_batch2/batch2_data_compiled/fillout_h5
+raw_data_directory: /data/iacobuzc/haochen/Tapestri_batch2/batch2_data_BRCA_compiled/fillout_h5
 # this directory should be in the following structure:
 #  - {patient_1}.*.h5
 #  - {patient_2}.*.h5
-annotated_mutations: /data/iacobuzc/haochen/Tapestri_batch2/batch2_data_compiled/manual_annotated_snv_lists
+annotated_mutations: /data/iacobuzc/haochen/Tapestri_batch2/batch2_data_BRCA_compiled/manual_annotated_snv_lists
 # this directory should be in the following structure:
 #  - {patient_1}*voi.hz_curated.txt
 #  - {patient_2}*voi.hz_curated.txt
-falcon_solutions: /data/iacobuzc/haochen/Tapestri_batch2/batch2_data_compiled/falcon_results
+falcon_solutions: /data/iacobuzc/haochen/Tapestri_batch2/batch2_data_BRCA_compiled/falcon_solutions
 # this directory should be in the following structure:
 # - {patient_1}*assignment*.csv
 # - {patient_1}*clone_profile*.csv
