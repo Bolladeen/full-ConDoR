@@ -1,6 +1,6 @@
 # Constrained Dollo Solver
 
-This repository contains a Python script to solve the Constrained Dollo problem using mutation matrices and various data sources like total read counts, variant read counts, and more. The solution provides a phylogenetic tree in Newick format, CSV files with solutions, and DOT files for visualization.
+This repository contains a Python script to solve the Fast Constrained Dollo problem. The solution provides a phylogenetic tree in Newick format, CSV files with solutions, and DOT files for visualization.
 
 ## Requirements
 
