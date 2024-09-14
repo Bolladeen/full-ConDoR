@@ -23,13 +23,13 @@ You will need the following files as inputs:
 To run the script:
 
 ```bash
-python3 <script_name.py> -i <mutation_matrix.csv> -r <total_reads.csv> -v <variant_reads.csv> -o <output_prefix>
+python3 fast-condor.py -i <mutation_matrix.csv> -r <total_reads.csv> -v <variant_reads.csv> -o <output_prefix>
 ```
 
 Example with filtering and subclonal refinement:
 
 ```bash
-python3 <script_name.py> -i input.csv -r total_reads.csv -v variant_reads.csv -m metadata.csv --scr -o results/output_prefix
+python3 fast-condor.py -i input.csv -r total_reads.csv -v variant_reads.csv -m metadata.csv --scr -o results/output_prefix
 ```
 
 ## Parameters
@@ -54,7 +54,7 @@ python3 <script_name.py> -i input.csv -r total_reads.csv -v variant_reads.csv -m
 
 For a full list of parameters:
 ```bash
-python3 <script_name.py> -h
+python3 fast-condor.py -h
 ```
 
 ## Output Files
