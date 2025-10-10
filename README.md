@@ -1,5 +1,8 @@
 # Full-ConDoR Pipeline
 
+[![DOI](https://zenodo.org/badge/716362190.svg)](https://doi.org/10.5281/zenodo.17309065)
+
+
 This repository contains a workflow for running the Full-ConDoR pipline using Snakemake. 
 
 ## Prerequisites
@@ -161,7 +164,5 @@ The following text describe the outputs of the full-ConDoR pipeline.
 - `condor_downstream/{patient}/post_condor_cn_info/{patient}.cn_clone_profiles.png`  
   **Description:** A PNG file showing the CN clone profiles for each patient.
 
-
-[![DOI](https://zenodo.org/badge/716362190.svg)](https://doi.org/10.5281/zenodo.17309065)
 
 
